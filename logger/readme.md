@@ -1,9 +1,3 @@
-# BCIMiddleware
-
-The middleware of BCI computing, BCI communicating, and other necessary stuff.
-
-# Components
-
 ## Logger
 
 Generate logger by one sentence:
@@ -23,15 +17,3 @@ from logger import logger
 3. The logger will be automatically named as the created time.
    To prevent the logging being recorded into separate files,
    I suggest the users to generate the 'logger' and use it across the whole connected functions or packages.
-
-
-## TCP Communicating
-
-## Session Management
-
-# Development Diary
-
-## 2020-03-29
-
-1. Start the project;
-2. Add logging component to the project.

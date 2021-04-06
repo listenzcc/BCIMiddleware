@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>&#x5B9E;&#x9A8C;&#x8BBE;&#x8BA1;&#x53CA;&#x901A;&#x4FE1;&#x534F;&#x8BAE;</title>
+        <style>
+/* From extension zhuangtongfa.material-theme */
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body {
+  box-sizing: border-box;
+  min-width: 200px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote {
+  background-color: initial;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  color: initial;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body code {
+  color: inherit;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre code {
+  color: initial;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body code > div {
+  background: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table th, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table td {
+  border: 1px solid rgba(171, 178, 191, 0.5) !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body.showEditorSelection .code-active-line:before {
+  border-left: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body.showEditorSelection .code-line:hover:before {
+  border-left: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body.showEditorSelection .code-line .code-line:hover:before {
+  border-left: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body p, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body dl, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+/* Generated from 'node_modules/github-markdown-css/github-markdown.css' */
+@font-face {
+  font-family: octicons-link;
+  src: url(data:font/woff;charset=utf-8;base64,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) format("woff");
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  line-height: 1.5;
+  color: #abb2bf;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  background: #282c34;
+  padding-top: 20px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-c {
+  color: #6a737d;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-c1, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-s .pl-v {
+  color: #005cc5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-e, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-en {
+  color: #6f42c1;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-smi, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-s .pl-s1 {
+  color: #24292e;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-ent {
+  color: #22863a;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-k {
+  color: #d73a49;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-s, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-pds, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-s .pl-pse .pl-s1, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-sr, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-sr .pl-cce, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-sr .pl-sre, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-sr .pl-sra {
+  color: #032f62;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-v, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-smw {
+  color: #e36209;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-bu {
+  color: #b31d28;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-ii {
+  color: #fafbfc;
+  background-color: #b31d28;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-c2 {
+  color: #fafbfc;
+  background-color: #d73a49;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-c2::before {
+  content: "^M";
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-sr .pl-cce {
+  font-weight: bold;
+  color: #22863a;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-ml {
+  color: #735c0f;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mh, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mh .pl-en, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-ms {
+  font-weight: bold;
+  color: #005cc5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mi {
+  font-style: italic;
+  color: #24292e;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mb {
+  font-weight: bold;
+  color: #24292e;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-md {
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mi1 {
+  color: #22863a;
+  background-color: #f0fff4;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mc {
+  color: #e36209;
+  background-color: #ffebda;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mi2 {
+  color: #f6f8fa;
+  background-color: #005cc5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-mdr {
+  font-weight: bold;
+  color: #6f42c1;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-ba {
+  color: #586069;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-sg {
+  color: #959da5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-corl {
+  text-decoration: underline;
+  color: #032f62;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .octicon {
+  display: inline-block;
+  vertical-align: text-top;
+  fill: currentColor;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body a {
+  background-color: transparent;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body a:active, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body a:hover {
+  outline-width: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body strong {
+  font-weight: inherit;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body strong {
+  font-weight: bolder;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body img {
+  border-style: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body code, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body kbd, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body input {
+  font: inherit;
+  margin: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body input {
+  overflow: visible;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body [type=checkbox] {
+  box-sizing: border-box;
+  padding: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body * {
+  box-sizing: border-box;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body input {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body a {
+  color: #528bff;
+  text-decoration: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body a:hover {
+  text-decoration: underline;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body strong {
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body hr {
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #dfe2e5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body hr::before {
+  display: table;
+  content: "";
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body hr::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body td, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body th {
+  padding: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1 {
+  font-size: 32px;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6 {
+  font-size: 12px;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote {
+  margin: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol {
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul ol {
+  list-style-type: lower-roman;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul ul ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul ol ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol ul ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body dd {
+  margin-left: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .octicon {
+  vertical-align: text-bottom;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-0 {
+  padding-left: 0 !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-1 {
+  padding-left: 4px !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-2 {
+  padding-left: 8px !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-3 {
+  padding-left: 16px !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-4 {
+  padding-left: 24px !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-5 {
+  padding-left: 32px !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .pl-6 {
+  padding-left: 40px !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body::before {
+  display: table;
+  content: "";
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body > *:first-child {
+  margin-top: 0 !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body > *:last-child {
+  margin-bottom: 0 !important;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .anchor {
+  float: left;
+  padding-right: 4px;
+  margin-left: -20px;
+  line-height: 1;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .anchor:focus {
+  outline: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body p, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body dl, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: #e1e4e8;
+  border: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote {
+  /* padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5; */
+  padding: 8.5px 17px;
+  margin: 1.5em 0;
+  font-size: inherit;
+  color: #7c879c;
+  border-color: #4b5362;
+  border-width: 4px;
+  border-left: 5px solid #4b5362;
+  background: transparent;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote > :first-child {
+  margin-top: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: 11px;
+  line-height: 10px;
+  color: #444d56;
+  vertical-align: middle;
+  background-color: #fafbfc;
+  border: solid 1px #c6cbd1;
+  border-bottom-color: #959da5;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #959da5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #f0f0f0;
+  border-bottom: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1 .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2 .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3 .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4 .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5 .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6 .octicon-link {
+  color: #1b1f23;
+  vertical-align: middle;
+  visibility: hidden;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1:hover .anchor, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2:hover .anchor, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3:hover .anchor, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4:hover .anchor, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5:hover .anchor, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6:hover .anchor {
+  text-decoration: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1:hover .anchor .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2:hover .anchor .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3:hover .anchor .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4:hover .anchor .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5:hover .anchor .octicon-link, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h1 {
+  padding-bottom: 0.3em;
+  font-size: 2em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.5em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h3 {
+  font-size: 1.25em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h4 {
+  font-size: 1em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h5 {
+  font-size: 0.875em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body h6 {
+  font-size: 0.85em;
+  color: #6a737d;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol {
+  padding-left: 2em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul ul, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ul ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol ol, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body li {
+  word-wrap: break-all;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body li > p {
+  margin-top: 16px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body li + li {
+  margin-top: 0.25em;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body dl {
+  padding: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: 600;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table th {
+  font-weight: 700;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table th, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table td {
+  padding: 6px 13px;
+  /* border: 1px solid #dfe2e5; */
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table tr {
+  /* background-color: #fff; */
+  /* border-top: 1px solid #c6cbd1; */
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body table tr:nth-child(2n) {
+  /* background-color: #f6f8fa; */
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body img {
+  max-width: 100%;
+  box-sizing: content-box;
+  display: inline-block;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body img[align=right] {
+  padding-left: 20px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body img[align=left] {
+  padding-right: 20px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: #3a3f4b;
+  border-radius: 3px;
+  color: white;
+  margin: 0 1px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  word-wrap: normal;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre > code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .highlight {
+  margin-bottom: 16px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .highlight pre, .vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  /* background-color: #f6f8fa; */
+  border-radius: 3px;
+  background-color: #31363f;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body pre code {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+  color: #abb2bf;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .full-commit .btn-outline:not(:disabled):hover {
+  color: #005cc5;
+  border-color: #005cc5;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font: 11px "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  line-height: 10px;
+  color: #444d56;
+  vertical-align: middle;
+  background-color: #fafbfc;
+  border: solid 1px #d1d5da;
+  border-bottom-color: #c6cbd1;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #c6cbd1;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body :checked + .radio-label {
+  position: relative;
+  z-index: 1;
+  border-color: #0366d6;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .task-list-item {
+  list-style-type: none;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .task-list-item + .task-list-item {
+  margin-top: 3px;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body .task-list-item input {
+  margin: 0 0.2em 0.25em -1.6em;
+  vertical-align: middle;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"].vscode-body hr {
+  border-bottom-color: #eee;
+}
+
+/*
+
+Atom One Dark by Daniel Gamage
+Original One Dark Syntax theme from https://github.com/atom/one-dark-syntax
+
+base:    #282c34
+mono-1:  #abb2bf
+mono-2:  #818896
+mono-3:  #5c6370
+hue-1:   #56b6c2
+hue-2:   #61aeee
+hue-3:   #c678dd
+hue-4:   #98c379
+hue-5:   #e06c75
+hue-5-2: #be5046
+hue-6:   #d19a66
+hue-6-2: #e6c07b
+
+*/
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #abb2bf;
+  background: #282c34;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-comment,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-doctag,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-keyword,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-formula {
+  color: #c678dd;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-section,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-name,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-selector-tag,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-deletion,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-subst {
+  color: #e06c75;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-literal {
+  color: #56b6c2;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-string,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-regexp,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-addition,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-attribute,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-meta-string {
+  color: #98c379;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-built_in,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-class .hljs-title {
+  color: #e6c07b;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-attr,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-variable,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-template-variable,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-type,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-selector-class,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-selector-attr,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-selector-pseudo,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-number {
+  color: #d19a66;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-symbol,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-bullet,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-link,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-meta,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-selector-id,
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-title {
+  color: #61aeee;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-emphasis {
+  font-style: italic;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-strong {
+  font-weight: bold;
+}
+.vscode-dark[data-vscode-theme-name="One Dark Pro"] .hljs-link {
+  text-decoration: underline;
+}
+
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="实验设计及通信协议">实验设计及通信协议</h1>
+<ul>
+<li><a href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1%E5%8F%8A%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE">实验设计及通信协议</a>
+<ul>
+<li><a href="#%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0">系统概述</a></li>
+<li><a href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%BC%8F">训练模式</a>
+<ul>
+<li><a href="#%E6%B5%81%E7%A8%8B%E5%9B%BE">流程图</a></li>
+<li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89">消息定义</a></li>
+</ul>
+</li>
+<li><a href="#%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F">异步模式</a>
+<ul>
+<li><a href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-1">流程图</a></li>
+<li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89-1">消息定义</a></li>
+</ul>
+</li>
+<li><a href="#%E5%90%8C%E6%AD%A5%E6%A8%A1%E5%BC%8F">同步模式</a>
+<ul>
+<li><a href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-2">流程图</a></li>
+<li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89-2">消息定义</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%B6%E4%BB%96%E6%B6%88%E6%81%AF">其他消息</a>
+<ul>
+<li><a href="#%E5%BF%83%E8%B7%B3%E5%8C%85%E6%B6%88%E6%81%AF">心跳包消息</a></li>
+<li><a href="#%E6%97%A0%E6%B3%95%E8%AF%86%E5%88%AB%E6%B6%88%E6%81%AF">无法识别消息</a></li>
+<li><a href="#%E6%97%A0%E6%B3%95%E6%89%A7%E8%A1%8C%E6%B6%88%E6%81%AF">无法执行消息</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="系统概述">系统概述</h2>
+<p>实验系统由“主控”（薛）、“后台”（张）和“采集”（脑电设备）三部分组成。
+其中，</p>
+<ul>
+<li>“主控”和“后台”之间进行 TCP 通信；</li>
+<li>“主控”通过并口向“采集”设备发送实验标签；</li>
+<li>“后台”根据需要获取“采集”设备的实时数据。</li>
+</ul>
+<p>实验分为三种模式，分别为</p>
+<ol>
+<li>
+<p>训练模式</p>
+<p>用于用户在正式使用前进行算法训练。</p>
+</li>
+<li>
+<p>异步模式</p>
+<p>实验开始后，“主控”程序向“后台”程序发送计算请求；
+“后台”程序接到要求后，根据近期脑电数据，计算并发送动作标签。</p>
+</li>
+<li>
+<p>同步模式</p>
+<p>实验开始后，“后台”程序周期性地，主动向“主控”程序发送动作标签；
+动作标签是对连续的脑电数据进行加窗而计算得到的。</p>
+</li>
+</ol>
+<h2 id="训练模式">训练模式</h2>
+<h3 id="流程图">流程图</h3>
+<blockquote>
+ <img src="file:///c:\Users\liste\OneDrive\Documents\工作记录\奕伟波脑机接口项目\实验设计及通信协议\训练模式.png" alt="./训练模式.png" width="600px">
+<p>图 1 训练模式示意图</p>
+</blockquote>
+<h3 id="消息定义">消息定义</h3>
+<ol>
+<li>
+<p>开始采集消息</p>
+<p>由“主控”发送给“后台”，用于开始训练模式。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据将存储于此，目录应存在，文件应不存在</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束采集消息</p>
+<p>由“主控”发送给“后台”，用于结束训练模式。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopSession&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束消息</p>
+<p>由“后台”发送给“主控”，用于告知数据与模型存储完毕。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据已存储于此</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据已存储于此</span>
+}
+</div></code></pre>
+</li>
+</ol>
+<h2 id="异步模式">异步模式</h2>
+<h3 id="流程图-1">流程图</h3>
+<blockquote>
+ <img src="file:///c:\Users\liste\OneDrive\Documents\工作记录\奕伟波脑机接口项目\实验设计及通信协议\异步模式.png" alt="./异步模式.png" width="600px">
+<p>图 2 训练模式示意图</p>
+</blockquote>
+<h3 id="消息定义-1">消息定义</h3>
+<ol>
+<li>
+<p>开始采集消息</p>
+<p>由“主控”发送给“后台”，用于开始异步模式。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>计算标签消息</p>
+<p>由“主控”发送给“后台”，用于要求后者计算动作标签。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;computeLabel&quot;</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束采集消息</p>
+<p>由“主控”发送给“后台”，用于结束异步模式。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopSession&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>标签消息</p>
+<p>由“后台”发送给“主控”，用于告知动作标签。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;labelComputed&quot;</span>,
+  <span class="hljs-attr">&quot;label&quot;</span>: <span class="hljs-string">&quot;1&quot;</span> <span class="hljs-comment">// &quot;1&quot; refers motion; &quot;0&quot; refers no motion</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束消息</p>
+<p>由“后台”发送给“主控”，用于告知数据存储完毕。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
+}
+</div></code></pre>
+</li>
+</ol>
+<h2 id="同步模式">同步模式</h2>
+<h3 id="流程图-2">流程图</h3>
+<blockquote>
+ <img src="file:///c:\Users\liste\OneDrive\Documents\工作记录\奕伟波脑机接口项目\实验设计及通信协议\同步模式.png" alt="./同步模式.png" width="600px">
+<p>图 2 训练模式示意图</p>
+</blockquote>
+<h3 id="消息定义-2">消息定义</h3>
+<ol>
+<li>
+<p>开始采集消息</p>
+<p>由“主控”发送给“后台”，用于开始异步模式。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束采集消息</p>
+<p>由“主控”发送给“后台”，用于结束异步模式。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopSession&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>标签消息</p>
+<p>由“后台”发送给“主控”，用于告知动作标签。
+由于采用“同步”模式，本消息由“后台”<strong>自主地</strong>、<strong>周期性</strong>地发送给主控。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;labelComputed&quot;</span>,
+  <span class="hljs-attr">&quot;label&quot;</span>: <span class="hljs-string">&quot;1&quot;</span> <span class="hljs-comment">// &quot;1&quot; refers motion; &quot;0&quot; refers no motion</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束消息</p>
+<p>由“后台”发送给“主控”，用于告知数据存储完毕。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
+}
+</div></code></pre>
+</li>
+</ol>
+<h2 id="其他消息">其他消息</h2>
+<h3 id="心跳包消息">心跳包消息</h3>
+<p>心跳包消息用于保持 TCP 连接，由通信能与者按需发送，频率不宜过快。
+接到心跳包后，需要发送心跳回复包，为避免消息死循环，不可回复心跳回复包。</p>
+<p>消息约定</p>
+<ul>
+<li>心跳包：</li>
+</ul>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;keepAlive&quot;</span>,
+  <span class="hljs-attr">&quot;count&quot;</span>: <span class="hljs-string">&quot;0&quot;</span>
+}
+</div></code></pre>
+<ul>
+<li>心跳回复包：</li>
+</ul>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;keepAlive&quot;</span>,
+  <span class="hljs-attr">&quot;count&quot;</span>: <span class="hljs-string">&quot;1&quot;</span>
+}
+</div></code></pre>
+<h3 id="无法识别消息">无法识别消息</h3>
+<p>由于本系统包含多种实验模式和信息种类，约定将以下消息作为无法识别消息：</p>
+<ul>
+<li>不属于当前实验模式的合法消息；
+<ul>
+<li>如“训练模式”过程中，收到“异步模式”的消息；</li>
+<li>如“同步模式”过程中，收到“计算标签”的消息；</li>
+<li>……</li>
+</ul>
+</li>
+<li>不满足本约定的所有非法消息。</li>
+</ul>
+<p>接到“无法识别消息”后，接收端应积极回复“消息无法识别”错误反馈消息。</p>
+<p>消息约定：</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;error&quot;</span>,
+  <span class="hljs-attr">&quot;reason&quot;</span>: <span class="hljs-string">&quot;invalidMessage&quot;</span>,
+  <span class="hljs-attr">&quot;raw&quot;</span>: <span class="hljs-string">&quot;{...}&quot;</span>, <span class="hljs-comment">// 建议将收到的消息原封不动写在这里，方便对方DEBUG</span>
+  <span class="hljs-attr">&quot;comment&quot;</span>: <span class="hljs-string">&quot;bala bala&quot;</span> <span class="hljs-comment">// 其他有用信息</span>
+}
+</div></code></pre>
+<h3 id="无法执行消息">无法执行消息</h3>
+<p>由于本系统涉及数据流及文件操作，如</p>
+<ul>
+<li>脑电数据获取；</li>
+<li>数据文件存储；</li>
+<li>模型文件读取；</li>
+<li>……</li>
+</ul>
+<p>如遇到文件应存在却不存在，或要存储的目录不存在的情况，需要将其视为“无法执行消息”。
+另外，如遇到无法从脑电设备获取数据的情况，也属于“无法执行消息”。</p>
+<p>接到“无法执行消息”后，接收端应积极回复“消息无法执行”错误反馈消息。</p>
+<p>消息约定：</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;error&quot;</span>,
+  <span class="hljs-attr">&quot;reason&quot;</span>: <span class="hljs-string">&quot;operationFailed&quot;</span>,
+  <span class="hljs-attr">&quot;detail&quot;</span>: <span class="hljs-string">&quot;--&quot;</span>, <span class="hljs-comment">// [见后表]</span>
+  <span class="hljs-attr">&quot;raw&quot;</span>: <span class="hljs-string">&quot;{...}&quot;</span>, <span class="hljs-comment">// 建议将收到的消息原封不动写在这里，方便对方处理</span>
+  <span class="hljs-attr">&quot;comment&quot;</span>: <span class="hljs-string">&quot;bala bala&quot;</span> <span class="hljs-comment">// 其他有用信息</span>
+}
+</div></code></pre>
+<p>由于运行时遇到的情况千奇百怪，现将可能的情况枚举如下：</p>
+<blockquote>
+<p>表 1、Detail 字段典型值对照表</p>
+<table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>detail 字段</th>
+<th>典型情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>folderInvalid</td>
+<td>应存在的目录不存在</td>
+</tr>
+<tr>
+<td>2</td>
+<td>fileInvalid</td>
+<td>应存在的文件不存在</td>
+</tr>
+<tr>
+<td>3</td>
+<td>fileExists</td>
+<td>不应存在的文件存在</td>
+</tr>
+<tr>
+<td>4</td>
+<td>fileWrong</td>
+<td>无法正常载入文件</td>
+</tr>
+<tr>
+<td>5</td>
+<td>deviceError</td>
+<td>无法获取合格的脑电数据</td>
+</tr>
+<tr>
+<td>6</td>
+<td>computeError</td>
+<td>无法完成标签计算</td>
+</tr>
+<tr>
+<td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\infty</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord">∞</span></span></span></span></td>
+<td>undefinedError</td>
+<td>不属于以上的其他错误情况</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>注：在实际使用过程中，错误检查的顺序与上表相同，遇到错误立即返回，不再继续进行后续检查。</p>
+
+    </body>
+    </html>

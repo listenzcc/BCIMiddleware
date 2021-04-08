@@ -5,6 +5,7 @@ Aim: Start new TCP client and make interface for it in the console.
 - @interface: The function for starting client and user interface.
 '''
 
+import json
 from TCPClient import TCPClient
 
 if __name__ == '__main__':
@@ -36,7 +37,11 @@ if __name__ == '__main__':
 
         if inp.startswith('send '):
             message = inp.split(' ', 1)[1]
-            client.send(message)
+            dct = dict(
+                method="message",
+                content=message
+            )
+            client.send(json.dumps(dct))
             continue
 
     input('ByeBye, press enter to escape.')

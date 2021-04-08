@@ -48,6 +48,8 @@ class TrainModule(object):
         self.ds = DataStack(filepath, **kwargs)
         self.ds.start()
 
+        self.stopped = False
+
     def generate_decoder(self):
         # Generate and save decoder
         data = self.ds.data
@@ -68,12 +70,23 @@ class TrainModule(object):
             # 1. Stop collecting data;
             # 2. Generate decoder and save it to the disk;
             # 3. Save the data to the disk
+            self.stopped = True
             self.ds.stop()
             self.generate_decoder()
             self.ds.save()
-            return 0, f'The save has been saved to {self.filepath}'
+            return 0, dict(
+                method='sessionStopped',
+                sessionName='training',
+                dataPath=self.filepath,
+                modelPath=self.decoderpath
+            )
 
-        return 1, f'Failed to parse {dct}'
+        return 1, dict(
+            method='error',
+            reason='invalidMessage',
+            raw='',
+            comment=f'Training module failed to parse {dct}'
+        )
 
 
 class ActiveModule(object):
@@ -109,6 +122,9 @@ class ActiveModule(object):
         # Load the decoder
         self.load_decoder()
 
+        self.state = 'alive'
+        self.stopped = False
+
     def load_decoder(self):
         # todo: Load decoder
         self.decoder = self.decoderpath
@@ -141,12 +157,23 @@ class ActiveModule(object):
             # Stop active session,
             # 1. Stop collecting data;
             # 2. Save the data to the disk
-            self.state = 'alive'
+            self.state = 'stopped'
+            self.stopped = True
             self.ds.stop()
             self.ds.save()
-            return 0, f'The save has been saved to {self.filepath}'
 
-        return 1, f'Failed to parse {dct}'
+            return 0, dict(
+                method='sessionStopped',
+                sessionName='synchronous',
+                dataPath=self.filepath
+            )
+
+        return 1, dict(
+            method='error',
+            reason='invalidMessage',
+            raw='',
+            comment=f'Active module failed to parse {dct}'
+        )
 
 
 class PassiveModule(object):
@@ -180,6 +207,8 @@ class PassiveModule(object):
         # Load the decoder
         self.load_decoder()
 
+        self.stopped = False
+
     def load_decoder(self):
         # todo: Load decoder
         self.decoder = self.decoderpath
@@ -187,7 +216,7 @@ class PassiveModule(object):
     def receive(self, dct):
         method = dct.get('method', None)
 
-        if method == 'query':
+        if method == 'computeLabel':
             # Compute event on query,
             # 1. Get the latest data;
             # 2. Compute the event using decoder and data.
@@ -197,14 +226,29 @@ class PassiveModule(object):
 
             # todo: Compute event
             out = (self.decoder, d.shape)
-            return 0, out
+            out = '1'
+            return 0, dict(
+                method='labelComputed',
+                label=out
+            )
 
         if method == 'stop':
             # Stop passive session,
             # 1. Stop collecting data;
             # 2. Save the data to the disk
+            self.stopped = True
             self.ds.stop()
             self.ds.save()
-            return 0, f'The save has been saved to {self.filepath}'
 
-        return 1, f'Failed to parse {dct}'
+            return 0, dict(
+                method='sessionStopped',
+                sessionName='asynchronous',
+                dataPath=self.filepath
+            )
+
+        return 1, dict(
+            method='error',
+            reason='invalidMessage',
+            raw='',
+            comment=f'Passive module failed to parse {dct}'
+        )

@@ -8,10 +8,12 @@ TCPServer will serve forever and it handles several TCP sessions.
 '''
 
 # Imports
+import json
 import socket
 import threading
 import traceback
 
+from .modules import TrainModule, ActiveModule, PassiveModule
 from . import logger, cfg
 
 # Read configures
@@ -19,6 +21,7 @@ IP = cfg['Server']['localIP']
 port = int(cfg['Server']['localPort'])
 buffer_size = int(cfg['Server']['bufferSize'])
 coding = cfg['Server']['coding']
+interval = 2
 
 # Tools
 # The TCP message is binary, so decoding and encoding is necessary.
@@ -40,7 +43,37 @@ def encode(content, coding=coding):
         return content
 
 
+def unpack(pack):
+    try:
+        return json.loads(pack)
+    except:
+        return None
+
+
+def pack(dct):
+    return json.dumps(dct)
+
+
+# Error Messages
+def invalidMessageError(raw, comment=''):
+    logger.error(f'InvalidMessageError: {raw}, {comment}')
+    return pack(dict(method='error',
+                     reason='invalidMessage',
+                     raw=decode(raw),
+                     comment=decode(comment)))
+
+
+def operationFailedError(raw, detail='', comment=''):
+    logger.error(f'OperationFailedError: {raw}, {comment}')
+    return pack(dict(method='error',
+                     reason='operationFailed',
+                     detail=detail,
+                     raw=raw,
+                     comment=comment))
+
 # TCPServer
+
+
 class TCPServer(object):
     ''' TCP server serves forever,
     it handles several sessions.
@@ -124,6 +157,7 @@ class TCPSession(object):
         self.address = address
         self.start()
         self.is_connected = True
+        self.module = None
         logger.info(f'Client connected: {self.address}')
 
     def start(self):
@@ -149,9 +183,14 @@ class TCPSession(object):
         '''
         while True:
             try:
+                # ----------------------------------------------------------------
+                # Receive new incoming message
                 income = self.client.recv(buffer_size)
                 logger.debug(f'Received {income} from {self.address}')
+                self.send(f'Message is received: {income}')
 
+                # ----------------------------------------------------------------
+                # Terminating commands
                 if income == b'':
                     self.close()
                     break
@@ -160,7 +199,88 @@ class TCPSession(object):
                     self.close()
                     break
 
-                self.send(f'Message is received: {income}')
+                # ----------------------------------------------------------------
+                # Unpack incoming message.
+                # It should be parseable json object.
+                dct = unpack(income)
+                # If unpack fails,
+                # send invalid message error.
+                if dct is None:
+                    self.send(invalidMessageError(income,
+                                                  comment=f'Illegal JSON from {self.address}'))
+                    continue
+                logger.debug(f'Parsed message {dct} from {self.address}')
+
+                # ----------------------------------------------------------------
+                # Start training module
+                if all([dct.get('method', None) == 'startSession',
+                        dct.get('sessionName', None) == 'training'],
+                        self.module == None):
+                    logger.info(f'Training module is starting')
+                    try:
+                        self.module = TrainModule(filepath=dct['filepath'],
+                                                  decoderpath=dct['decoderpath'])
+                    except:
+                        self.send(operationFailedError(income,
+                                                       detail=f'folderInvalid, fileExists',
+                                                       comment=f'Can not start training module for {self.address}'))
+                    logger.info(f'Training module started')
+
+                # ----------------------------------------------------------------
+                # Start active module
+                if all([dct.get('method', None) == 'startSession',
+                        dct.get('sessionName', None) == 'synchronous'],
+                        self.module == None):
+                    logger.info(f'Active module is starting')
+                    try:
+                        self.module = ActiveModule(filepath=dct['filepath'],
+                                                   decoderpath=dct['decoderpath'],
+                                                   interval=interval)
+                    except:
+                        self.send(operationFailedError(income,
+                                                       detail=f'folderInvalid, fileExists',
+                                                       comment=f'Can not start active module for {self.address}'))
+                    logger.info(
+                        f'Active module started, the labels will be sent every {interval} seconds.')
+
+                # ----------------------------------------------------------------
+                # Start passive module
+                if all([dct.get('method', None) == 'startSession',
+                        dct.get('sessionName', None) == 'asynchronous'],
+                        self.module == None):
+                    logger.info(f'Passive module is starting')
+                    try:
+                        self.module = PassiveModule(filepath=dct['filepath'],
+                                                    decoderpath=dct['decoderpath'])
+                    except:
+                        self.send(operationFailedError(income,
+                                                       detail=f'folderInvalid, fileExists',
+                                                       comment=f'Can not start active module for {self.address}'))
+                    logger.info(
+                        f'Passive module started, the labels will be sent at every requests.')
+
+                # ----------------------------------------------------------------
+                # Feed
+                if self.module is not None:
+                    success, rdct = self.module.receive(dct)
+
+                    logger.debug(
+                        f'Module receives {dct}, operation returns {success}:{rdct}')
+
+                    if success == 0:
+                        self.send(pack(rdct))
+                    else:
+                        self.send(invalidMessageError(income,
+                                                      comment=rdct['comment']))
+
+                    # Remove existing module if it has stopped
+                    if self.module.stopped:
+                        self.module = None
+
+                # ----------------------------------------------------------------
+                # Un dealed operation
+                self.send(invalidMessageError(income,
+                                              comment=f'Invalid operation from {self.address}'))
 
             except Exception as err:
                 logger.error(f'Unexpected error: {err}')

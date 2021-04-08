@@ -713,7 +713,12 @@ hue-6-2: #e6c07b
 其中，</p>
 <ul>
 <li>“主控”和“后台”之间进行 TCP 通信；</li>
-<li>“主控”通过并口向“采集”设备发送实验标签；</li>
+<li>“主控”和“游戏”之间进行其他必要的通信；
+<ul>
+<li>“游戏”通过并口向“采集”设备发送实验标签；</li>
+<li>由于“后台”只与“主控”进行通信，因此“游戏”的相关功能在“后台”的视角看来，是由“主控”进行协调和完成的；</li>
+</ul>
+</li>
 <li>“后台”根据需要获取“采集”设备的实时数据。</li>
 </ul>
 <p>实验分为三种模式，分别为</p>
@@ -790,7 +795,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;asynchronous&quot;</span>,
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
   <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
 }
@@ -811,7 +816,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopSession&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;asynchronous&quot;</span>
 }
 </div></code></pre>
 </li>
@@ -831,7 +836,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;asynchronous&quot;</span>,
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
 }
 </div></code></pre>
@@ -847,7 +852,7 @@ hue-6-2: #e6c07b
 <ol>
 <li>
 <p>开始采集消息</p>
-<p>由“主控”发送给“后台”，用于开始异步模式。</p>
+<p>由“主控”发送给“后台”，用于开始同步模式。</p>
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
@@ -1002,7 +1007,17 @@ hue-6-2: #e6c07b
 </tbody>
 </table>
 </blockquote>
-<p>注：在实际使用过程中，错误检查的顺序与上表相同，遇到错误立即返回，不再继续进行后续检查。</p>
+<p>注：在实际使用过程中，错误检查的顺序与上表相同，遇到错误立即返回，不再继续进行后续检查；
+另外，在实际使用中也可能出现多个错误均有可能性的情况，将使用多个 detail 字段进行描述；</p>
+<p>举例</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;error&quot;</span>,
+  <span class="hljs-attr">&quot;reason&quot;</span>: <span class="hljs-string">&quot;operationFailed&quot;</span>,
+  <span class="hljs-attr">&quot;detail&quot;</span>: <span class="hljs-string">&quot;folderInvalid, fileExists&quot;</span>, <span class="hljs-comment">// 代表目录无效或文件存在，两个错误均有可能已经发生</span>
+  <span class="hljs-attr">&quot;raw&quot;</span>: <span class="hljs-string">&quot;{...}&quot;</span>,
+  <span class="hljs-attr">&quot;comment&quot;</span>: <span class="hljs-string">&quot;bala bala&quot;</span>
+}
+</div></code></pre>
 
     </body>
     </html>

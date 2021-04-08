@@ -115,7 +115,7 @@
    ```json
    {
      "method": "startSession",
-     "sessionName": "synchronous",
+     "sessionName": "asynchronous",
      "dataPath": "./data/latestData.csv", // 实验数据将存储于此，目录应存在，文件应不存在
      "modelPath": "./module/latestModel.csv" // 模型数据，文件应存在
    }
@@ -142,7 +142,7 @@
    ```json
    {
      "method": "stopSession",
-     "sessionName": "synchronous"
+     "sessionName": "asynchronous"
    }
    ```
 
@@ -168,7 +168,7 @@
    ```json
    {
      "method": "sessionStopped",
-     "sessionName": "synchronous",
+     "sessionName": "asynchronous",
      "dataPath": "./data/latestData.csv" // 实验数据已存储于此
    }
    ```
@@ -329,4 +329,17 @@
 > | 6        | computeError   | 无法完成标签计算         |
 > | $\infty$ | undefinedError | 不属于以上的其他错误情况 |
 
-注：在实际使用过程中，错误检查的顺序与上表相同，遇到错误立即返回，不再继续进行后续检查。
+注：在实际使用过程中，错误检查的顺序与上表相同，遇到错误立即返回，不再继续进行后续检查；
+另外，在实际使用中也可能出现多个错误均有可能性的情况，将使用多个 detail 字段进行描述；
+
+举例
+
+```json
+{
+  "method": "error",
+  "reason": "operationFailed",
+  "detail": "folderInvalid, fileExists", // 代表目录无效或文件存在，两个错误均有可能已经发生
+  "raw": "{...}",
+  "comment": "bala bala"
+}
+```

@@ -2,6 +2,8 @@ import time
 import threading
 import numpy as np
 
+from . import logger
+
 
 default_kwargs = dict(
     n_channels=64,  # Number of channels
@@ -22,7 +24,7 @@ def get_latest_device(simulation=True):
 
     # Real application
     # todo: Read the latest data from the device
-    print(f'Getting latest data by amazing code.')
+    logger.debug(f'Getting latest data by amazing code.')
     return None
 
 
@@ -56,7 +58,7 @@ class DataStack(object):
 
         self._reset()
 
-        print(
+        logger.debug(
             f'Initialized with filepath: {filepath}, n_channels: {n_channels}, interval: {interval}')
 
     def _reset(self):
@@ -71,16 +73,17 @@ class DataStack(object):
         - @data: The data to be added
         '''
         self.data = np.concatenate([self.data, data], axis=0)
-        print(f'Data stack is changed to the shape of {self.data.shape}')
+        logger.debug(
+            f'Data stack is changed to the shape of {self.data.shape}')
 
     def _keep_collecting(self):
         # Keep collecting the data
-        print(f'Collecting starts at {time.ctime()}')
+        logger.debug(f'Collecting starts')
         while self.state == 'collecting':
             d = get_latest_device()
             self._add(d)
             time.sleep(self.interval)
-        print(f'Collecting stopped at {time.ctime()}')
+        logger.debug(f'Collecting stopped')
 
     def start(self):
         # Start the thread to keep collecting the data
@@ -98,11 +101,12 @@ class DataStack(object):
         # Save the data to the disk
         d = self.data
         print(f'Saving the data ({d.shape}) to {self.filepath}')
+        np.save(self.filepath, d)
 
     def report(self):
         # Report the current state of the stack,
         # it may change on developping.
-        print(f'Current data shape is: {self.data.shape}')
+        logger.debug(f'Current data shape is: {self.data.shape}')
 
     def latest(self, length=None):
         ''' Get the latest data by the [length]
@@ -116,8 +120,8 @@ class DataStack(object):
 
         n = length * self.freq
         if self.data.shape[0] < n:
-            print(
-                f'Warning: There is not enough data for your request of length={length}')
+            logger.warning(
+                f'There is not enough data for your request of length={length}')
         return self.data[-n:]
 
 

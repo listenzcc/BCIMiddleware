@@ -8,10 +8,13 @@ TCPServer will serve forever and it handles several TCP sessions.
 '''
 
 # Imports
+import os
 import json
 import socket
 import threading
 import traceback
+
+from numpy.lib.arraysetops import isin
 
 from .modules import TrainModule, ActiveModule, PassiveModule
 from . import logger, cfg
@@ -51,16 +54,25 @@ def unpack(pack):
 
 
 def pack(dct):
+    for key in dct:
+        dct[key] = decode(dct[key])
     return json.dumps(dct)
 
+# Keep Alive Message
+
+
+def keepAliveMessage():
+    return pack(dict(method='keepAlive', count='1'))
 
 # Error Messages
+
+
 def invalidMessageError(raw, comment=''):
     logger.error(f'InvalidMessageError: {raw}, {comment}')
     return pack(dict(method='error',
                      reason='invalidMessage',
-                     raw=decode(raw),
-                     comment=decode(comment)))
+                     raw=raw,
+                     comment=comment))
 
 
 def operationFailedError(raw, detail='', comment=''):
@@ -173,6 +185,10 @@ class TCPSession(object):
         ''' Close the session '''
         self.client.close()
         self.is_connected = False
+
+        if self.module is not None:
+            self.module.ds.stop()
+
         logger.info(f'Client closed: {self.address}')
 
     def handle(self):
@@ -201,7 +217,7 @@ class TCPSession(object):
 
                 # ----------------------------------------------------------------
                 # Unpack incoming message.
-                # It should be parseable json object.
+                # It should be json object and parsed into a dict.
                 dct = unpack(income)
                 # If unpack fails,
                 # send invalid message error.
@@ -212,52 +228,83 @@ class TCPSession(object):
                 logger.debug(f'Parsed message {dct} from {self.address}')
 
                 # ----------------------------------------------------------------
+                # Keep alive message
+                if all([dct.get('method', None) == 'keepAlive',
+                        dct.get('count', None) == '0']):
+                    logger.debug(f'Received keepAlive message')
+                    self.send(keepAliveMessage())
+                    continue
+
+                # ----------------------------------------------------------------
                 # Start training module
                 if all([dct.get('method', None) == 'startSession',
-                        dct.get('sessionName', None) == 'training'],
-                        self.module == None):
+                        dct.get('sessionName', None) == 'training',
+                        self.module == None]):
                     logger.info(f'Training module is starting')
                     try:
-                        self.module = TrainModule(filepath=dct['filepath'],
-                                                  decoderpath=dct['decoderpath'])
+                        self.module = TrainModule(filepath=dct['dataPath'],
+                                                  decoderpath=dct['modelPath'])
                     except:
                         self.send(operationFailedError(income,
-                                                       detail=f'folderInvalid, fileExists',
+                                                       detail=f'undefinedError',
                                                        comment=f'Can not start training module for {self.address}'))
-                    logger.info(f'Training module started')
+                    if self.module is not None:
+                        logger.info(f'Training module started')
+                    continue
 
                 # ----------------------------------------------------------------
                 # Start active module
                 if all([dct.get('method', None) == 'startSession',
-                        dct.get('sessionName', None) == 'synchronous'],
-                        self.module == None):
+                        dct.get('sessionName', None) == 'synchronous',
+                        self.module == None]):
                     logger.info(f'Active module is starting')
+
+                    if not os.path.isfile(dct['modelPath']):
+                        self.send(operationFailedError(income,
+                                                       detail=f'fileInvalid',
+                                                       comment=f'Can not start active module for {self.address}, decoder path is invalid'))
+                        continue
+
                     try:
-                        self.module = ActiveModule(filepath=dct['filepath'],
-                                                   decoderpath=dct['decoderpath'],
-                                                   interval=interval)
+                        self.module = ActiveModule(filepath=dct['dataPath'],
+                                                   decoderpath=dct['modelPath'],
+                                                   interval=interval,
+                                                   send=self.send)
                     except:
                         self.send(operationFailedError(income,
-                                                       detail=f'folderInvalid, fileExists',
+                                                       detail=f'undefinedError',
                                                        comment=f'Can not start active module for {self.address}'))
-                    logger.info(
-                        f'Active module started, the labels will be sent every {interval} seconds.')
+
+                    if self.module is not None:
+                        logger.info(
+                            f'Active module started, the labels will be sent every {interval} seconds.')
+                        continue
 
                 # ----------------------------------------------------------------
                 # Start passive module
                 if all([dct.get('method', None) == 'startSession',
-                        dct.get('sessionName', None) == 'asynchronous'],
-                        self.module == None):
+                        dct.get('sessionName', None) == 'asynchronous',
+                        self.module == None]):
                     logger.info(f'Passive module is starting')
+
+                    if not os.path.isfile(dct['modelPath']):
+                        self.send(operationFailedError(income,
+                                                       detail=f'fileInvalid',
+                                                       comment=f'Can not start passive module for {self.address}, decoder path is invalid'))
+                        continue
+
                     try:
-                        self.module = PassiveModule(filepath=dct['filepath'],
-                                                    decoderpath=dct['decoderpath'])
+                        self.module = PassiveModule(filepath=dct['dataPath'],
+                                                    decoderpath=dct['modelPath'])
                     except:
                         self.send(operationFailedError(income,
-                                                       detail=f'folderInvalid, fileExists',
+                                                       detail=f'undefinedError',
                                                        comment=f'Can not start active module for {self.address}'))
-                    logger.info(
-                        f'Passive module started, the labels will be sent at every requests.')
+
+                    if self.module is not None:
+                        logger.info(
+                            f'Passive module started for {self.address}, the labels will be sent at every requests.')
+                        continue
 
                 # ----------------------------------------------------------------
                 # Feed
@@ -268,7 +315,7 @@ class TCPSession(object):
                         f'Module receives {dct}, operation returns {success}:{rdct}')
 
                     if success == 0:
-                        self.send(pack(rdct))
+                        self.send(rdct)
                     else:
                         self.send(invalidMessageError(income,
                                                       comment=rdct['comment']))
@@ -276,23 +323,33 @@ class TCPSession(object):
                     # Remove existing module if it has stopped
                     if self.module.stopped:
                         self.module = None
+                        logger.info(
+                            f'Current module stopped for {self.address}.')
+
+                    continue
 
                 # ----------------------------------------------------------------
-                # Un dealed operation
+                # No operation is done
                 self.send(invalidMessageError(income,
                                               comment=f'Invalid operation from {self.address}'))
 
             except Exception as err:
                 logger.error(f'Unexpected error: {err}')
                 traceback.print_exc()
-                self.close()
                 break
+
+        self.close()
 
     def send(self, message):
         ''' Send message to the client.
+
         Args:
         - @message: The message to be sent.
         '''
-        msg = encode(message)
+        if isinstance(message, dict):
+            msg = encode(pack(message))
+        else:
+            msg = encode(message)
+
         self.client.sendall(msg)
         logger.debug(f'Sent {message} to {self.address}')

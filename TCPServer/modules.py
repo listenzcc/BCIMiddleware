@@ -6,14 +6,6 @@ from .dataCollector import DataStack, default_kwargs
 kwargs = default_kwargs
 
 
-def isfile(path):
-    return os.path.isfile(path)
-
-
-def isdir(path):
-    return os.path.isdir(path)
-
-
 def load_decoder(path):
     # todo: Read the decoder on [path]
     return path
@@ -33,12 +25,8 @@ class TrainModule(object):
         - @filepath: The path of the file to be stored;
         - @decoderpath: The path of the decoder to be stored.
         '''
-        # Assert safe values
-        assert(isdir(os.path.dirname(filepath)))
-        assert(not isfile(filepath))
-
-        assert(isdir(decoderpath))
-        assert(not isfile(decoderpath))
+        print('------------------------------------------')
+        print(filepath, decoderpath)
 
         # Necessary parameters
         self.filepath = filepath
@@ -62,10 +50,18 @@ class TrainModule(object):
         # todo: Save decoder
         print(f'Saved the decoder to {self.decoderpath}')
 
+        with open(self.decoderpath, 'w') as f:
+            f.writelines([
+                f'Trained {decoder} with {data.shape}, save the decoder to {self.decoderpath}',
+                '\n',
+                f'The data is stored in {self.filepath}'
+                '\n',
+            ])
+
     def receive(self, dct):
         method = dct.get('method', None)
 
-        if method == 'stop':
+        if method == 'stopSession':
             # Stop training session,
             # 1. Stop collecting data;
             # 2. Generate decoder and save it to the disk;
@@ -96,19 +92,15 @@ class ActiveModule(object):
     3. Stop to save the data.
     '''
 
-    def __init__(self, filepath, decoderpath, interval):
+    def __init__(self, filepath, decoderpath, interval, send):
         ''' Initialize the active module,
 
         Args:
         - @filepath: The path of the file to be stored;
         - @decoderpath: The path of the decoder exists;
-        - @interval: The path of the timely job.
+        - @interval: The path of the timely job;
+        - @send: The sending method.
         '''
-        # Assert safe values
-        assert(isdir(os.path.dirname(filepath)))
-        assert(not isfile(filepath))
-
-        assert(isfile(decoderpath))
 
         # Necessary parameters
         self.filepath = filepath
@@ -122,38 +114,45 @@ class ActiveModule(object):
         # Load the decoder
         self.load_decoder()
 
-        self.state = 'alive'
+        self.timely_job(send)
+
         self.stopped = False
 
     def load_decoder(self):
         # todo: Load decoder
         self.decoder = self.decoderpath
 
-    def _keep_active(self, handler):
+    def _keep_active(self, send):
         while self.state == 'alive':
             # Get data
             d = self.ds.latest()
 
             # todo: Compute event
-            out = (self.decoder, d.shape)
-            handler(out)
+            label = (self.decoder, d.shape)
+            label = '1'
+            out = dict(
+                method='labelComputed',
+                label=label
+            )
+            send(out)
 
             time.sleep(self.interval)
 
-    def timely_job(self, handler):
+    def timely_job(self, send):
         ''' The timely job method
 
         Args:
         - @handler: The handler on time.
         '''
-        thread = threading.Thread(target=self._keep_active, args=(handler,))
+        self.state = 'alive'
+        thread = threading.Thread(target=self._keep_active, args=(send,))
         thread.setDaemon(True)
         thread.start()
 
     def receive(self, dct):
         method = dct.get('method', None)
 
-        if method == 'stop':
+        if method == 'stopSession':
             # Stop active session,
             # 1. Stop collecting data;
             # 2. Save the data to the disk
@@ -190,11 +189,6 @@ class PassiveModule(object):
         - @filepath: The path of the file to be stored;
         - @decoderpath: The path of the decoder exists.
         '''
-        # Assert safe values
-        assert(isdir(os.path.dirname(filepath)))
-        assert(not isfile(filepath))
-
-        assert(isfile(decoderpath))
 
         # Necessary parameters
         self.filepath = filepath
@@ -226,13 +220,13 @@ class PassiveModule(object):
 
             # todo: Compute event
             out = (self.decoder, d.shape)
-            out = '1'
+            label = '1'
             return 0, dict(
                 method='labelComputed',
-                label=out
+                label=label
             )
 
-        if method == 'stop':
+        if method == 'stopSession':
             # Stop passive session,
             # 1. Stop collecting data;
             # 2. Save the data to the disk

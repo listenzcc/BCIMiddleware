@@ -43,7 +43,7 @@ default_kwargs = dict(name='BCIMC',
                       filepath=os.path.join(os.path.dirname(__file__),
                                             '..',
                                             'logs',
-                                            'log-{}.txt'.format(timestr())),
+                                            'log-{}.log'.format(timestr())),
                       level=level,
                       test=False)
 

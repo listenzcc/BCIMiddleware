@@ -21,8 +21,8 @@ if __name__ == '__main__':
     client.send(pack(dict(
         method='startSession',
         sessionName='asynchronous',
-        dataPath='H:\\BCIMiddlewareFolder\\data-2.npy',
-        modelPath='H:\\BCIMiddlewareFolder\\model.txt'
+        dataPath='D:\\BCIMiddlewareFolder\\data-2.npy',
+        modelPath='D:\\BCIMiddlewareFolder\\model.txt'
     )))
 
     for _ in range(3):

@@ -1,15 +1,18 @@
 import time
+import socket
+import struct
 import threading
 import numpy as np
 
-from . import logger
+from . import logger, cfg
+from .neuroScanToolbox import NeuroScanDeviceClient
 
+n_channels = int(cfg['Device']['numChannels'])  # Number of channels
+freq = int(cfg['Device']['sampleRate'])  # Hz
 
 default_kwargs = dict(
-    n_channels=64,  # Number of channels
-    interval=1,  # Seconds
-    freq=100,  # Hz
-    latest_length=2,  # Seconds
+    n_channels=n_channels,
+    freq=freq,
 )
 
 
@@ -39,32 +42,37 @@ class DataStack(object):
     - @report: Get the current state of the report.
     '''
 
-    def __init__(self, filepath, n_channels, interval, freq, latest_length):
+    def __init__(self, filepath, n_channels=n_channels, freq=freq):
         ''' Initialize the data stack
 
         Args:
         - @filepath: Where the data will be stored in;
         - @n_channels: Number of channels, has default value;
-        - @interval: The interval of collecting data from the device, has default value;
         - @freq: The sampling frequency, has default value;
-        - @latest_length: The length of data at fetching the latest data.
         '''
         self.filepath = filepath
 
         self.n_channels = n_channels
-        self.interval = interval
         self.freq = freq
-        self.latest_length = latest_length
 
         self._reset()
 
+        self.nsclient = NeuroScanDeviceClient(cfg['Device']['deviceIP'],
+                                              int(cfg['Device']['devicePort']),
+                                              freq,
+                                              n_channels)
+
         logger.debug(
-            f'Initialized with filepath: {filepath}, n_channels: {n_channels}, interval: {interval}')
+            f'Initialized with filepath: {filepath}, n_channels: {n_channels}')
 
     def _reset(self):
         # Built-in method of reseting the state
         self.state = 'free'
-        self.data = np.zeros((0, self.n_channels))
+
+    def get_data(self):
+        d = self.nsclient.get_all()
+        logger.debug(f'Got all data from device, shape is {d.shape}')
+        return d
 
     def _add(self, data):
         ''' Built-in method of add the data into the stack
@@ -76,83 +84,42 @@ class DataStack(object):
         logger.debug(
             f'Data stack is changed to the shape of {self.data.shape}')
 
-    def _keep_collecting(self):
-        # Keep collecting the data
-        logger.debug(f'Collecting starts')
-        while self.state == 'collecting':
-            d = get_latest_device()
-            self._add(d)
-            time.sleep(self.interval)
-        logger.debug(f'Collecting stopped')
-
     def start(self):
         # Start the thread to keep collecting the data
         self._reset()
         self.state = 'collecting'
-        thread = threading.Thread(target=self._keep_collecting)
-        thread.setDaemon(True)
-        thread.start()
+        self.nsclient.start_acq()
 
     def stop(self):
         # Stop the collecting thread
+        self.nsclient.stop_acq()
         self.state = 'stopped'
+
+    def close(self):
+        self.nsclient.disconnect()
 
     def save(self):
         # Save the data to the disk
-        d = self.data
+        d = self.get_data()
         print(f'Saving the data ({d.shape}) to {self.filepath}')
         np.save(self.filepath, d)
 
     def report(self):
         # Report the current state of the stack,
         # it may change on developping.
-        logger.debug(f'Current data shape is: {self.data.shape}')
+        d = self.get_data()
+        logger.debug(f'Current data shape is: {d.shape}')
 
-    def latest(self, length=None):
+    def latest(self, length=4):
         ''' Get the latest data by the [length]
 
         Args:
-        - @length: The length of the fetched data, the unit is 'second', the default value is None,
-                   the None value means the self.latest_length will be used.
+        - @length: The length of the fetched data, the unit is 'second', the default value is 4 seconds,
         '''
-        if length is None:
-            length = self.latest_length
 
         n = length * self.freq
-        if self.data.shape[0] < n:
+        d = self.get_data()
+        if d.shape[1] < n:
             logger.warning(
                 f'There is not enough data for your request of length={length}')
-        return self.data[-n:]
-
-
-if __name__ == '__main__':
-    ds = DataStack('default_name', **default_kwargs)
-
-    ds.start()
-
-    while True:
-        inp = input('>> ')
-        if inp == 'q':
-            break
-
-        if inp == 'r':
-            ds.report()
-            continue
-
-        if inp == 'l':
-            print(ds.latest().shape)
-            continue
-
-        if inp == 't':
-            ds.start()
-            continue
-
-        if inp == 'k':
-            ds.stop()
-            continue
-
-        if inp == 's':
-            ds.save()
-            continue
-
-    print('Done')
+        return d[-n:]

@@ -1,6 +1,8 @@
 import os
 import time
 import threading
+
+from . import logger
 from .dataCollector import DataStack, default_kwargs
 
 kwargs = default_kwargs
@@ -40,15 +42,15 @@ class TrainModule(object):
 
     def generate_decoder(self):
         # Generate and save decoder
-        data = self.ds.data
+        data = self.ds.get_data()
         decoder = self.decoderpath
 
         # todo: Train decoder
-        print(
+        logger.info(
             f'Trained {decoder} with {data.shape}, save the decoder to {self.decoderpath}')
 
         # todo: Save decoder
-        print(f'Saved the decoder to {self.decoderpath}')
+        logger.info(f'Saved the decoder to {self.decoderpath}')
 
         with open(self.decoderpath, 'w') as f:
             f.writelines([
@@ -126,6 +128,8 @@ class ActiveModule(object):
         while self.state == 'alive':
             # Get data
             d = self.ds.latest()
+            logger.debug(
+                f'Got the latest data from device, shape is {d.shape}')
 
             # todo: Compute event
             label = (self.decoder, d.shape)
@@ -217,6 +221,8 @@ class PassiveModule(object):
 
             # Get data
             d = self.ds.latest()
+            logger.debug(
+                f'Got the latest data from device, shape is {d.shape}')
 
             # todo: Compute event
             out = (self.decoder, d.shape)

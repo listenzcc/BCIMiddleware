@@ -14,8 +14,6 @@ import socket
 import threading
 import traceback
 
-from numpy.lib.arraysetops import isin
-
 from .modules import TrainModule, ActiveModule, PassiveModule
 from . import logger, cfg
 
@@ -333,6 +331,10 @@ class TCPSession(object):
                 self.send(invalidMessageError(income,
                                               comment=f'Invalid operation from {self.address}'))
 
+            except ConnectionResetError as err:
+                logger.warning(f'Connection reset occurs. It can be normal.')
+                break
+
             except Exception as err:
                 logger.error(f'Unexpected error: {err}')
                 traceback.print_exc()
@@ -352,4 +354,4 @@ class TCPSession(object):
             msg = encode(message)
 
         self.client.sendall(msg)
-        logger.debug(f'Sent {message} to {self.address}')
+        logger.debug(f'Sent "{message}" to {self.address}')

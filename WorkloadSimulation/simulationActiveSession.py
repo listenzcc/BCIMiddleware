@@ -21,8 +21,8 @@ if __name__ == '__main__':
     client.send(pack(dict(
         method='startSession',
         sessionName='synchronous',
-        dataPath='H:\\BCIMiddlewareFolder\\data-1.npy',
-        modelPath='H:\\BCIMiddlewareFolder\\model.txt'
+        dataPath='D:\\BCIMiddlewareFolder\\data-1.npy',
+        modelPath='D:\\BCIMiddlewareFolder\\model.txt'
     )))
 
     time.sleep(10)

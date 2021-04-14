@@ -1,3 +1,5 @@
+'''Interactive UI for DataStack
+'''
 # %%
 from TCPServer.dataCollector import DataStack
 

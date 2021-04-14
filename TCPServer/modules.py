@@ -72,6 +72,7 @@ class TrainModule(object):
             self.ds.stop()
             self.generate_decoder()
             self.ds.save()
+            self.ds.close()
             return 0, dict(
                 method='sessionStopped',
                 sessionName='training',
@@ -164,6 +165,7 @@ class ActiveModule(object):
             self.stopped = True
             self.ds.stop()
             self.ds.save()
+            self.ds.close()
 
             return 0, dict(
                 method='sessionStopped',
@@ -239,6 +241,7 @@ class PassiveModule(object):
             self.stopped = True
             self.ds.stop()
             self.ds.save()
+            self.ds.close()
 
             return 0, dict(
                 method='sessionStopped',

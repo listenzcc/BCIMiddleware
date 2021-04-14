@@ -712,7 +712,8 @@ hue-6-2: #e6c07b
 <p>实验系统由“主控”（薛）、“后台”（张）和“采集”（脑电设备）三部分组成。
 其中，</p>
 <ul>
-<li>“主控”和“后台”之间进行 TCP 通信；</li>
+<li>由“主控”搭建 TCP 服务器，其他参与者以 client 的形式与之通信；</li>
+<li>“后台”仅与“主控”进行通信；</li>
 <li>“主控”和“游戏”之间进行其他必要的通信；
 <ul>
 <li>“游戏”通过并口向“采集”设备发送实验标签；</li>
@@ -803,10 +804,12 @@ hue-6-2: #e6c07b
 </li>
 <li>
 <p>计算标签消息</p>
-<p>由“主控”发送给“后台”，用于要求后者计算动作标签。</p>
+<p>由“主控”发送给“后台”，用于要求后者计算动作标签。
+包括“验证”和“测试”两种模式，“主控”应根据情况主动发送正确的模式内容。</p>
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
-  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;computeLabel&quot;</span>
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;computeLabel&quot;</span>,
+  <span class="hljs-attr">&quot;mode&quot;</span>: <span class="hljs-string">&quot;valid&quot;</span> <span class="hljs-comment">// 模式标签，&quot;valid&quot;:验证; &quot;test&quot;:测试.</span>
 }
 </div></code></pre>
 </li>

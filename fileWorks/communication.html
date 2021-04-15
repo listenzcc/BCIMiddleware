@@ -686,13 +686,13 @@ hue-6-2: #e6c07b
 <li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89">消息定义</a></li>
 </ul>
 </li>
-<li><a href="#%E5%BC%82%E6%AD%A5%E6%A8%A1%E5%BC%8F">异步模式</a>
+<li><a href="#%E5%90%8C%E6%AD%A5%E6%9C%89%E6%A0%87%E7%AD%BE%E6%A8%A1%E5%BC%8F">同步（有标签）模式</a>
 <ul>
 <li><a href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-1">流程图</a></li>
 <li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89-1">消息定义</a></li>
 </ul>
 </li>
-<li><a href="#%E5%90%8C%E6%AD%A5%E6%A8%A1%E5%BC%8F">同步模式</a>
+<li><a href="#%E5%BC%82%E6%AD%A5%E6%97%A0%E6%A0%87%E7%AD%BE%E6%A8%A1%E5%BC%8F">异步（无标签）模式</a>
 <ul>
 <li><a href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-2">流程图</a></li>
 <li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89-2">消息定义</a></li>
@@ -729,12 +729,12 @@ hue-6-2: #e6c07b
 <p>用于用户在正式使用前进行算法训练。</p>
 </li>
 <li>
-<p>异步模式</p>
-<p>实验开始后，“主控”程序向“后台”程序发送计算请求；
+<p>同步（有标签）模式</p>
+<p>实验开始后，“游戏”程序通过打并口的方式向“后台”程序发送计算请求；
 “后台”程序接到要求后，根据近期脑电数据，计算并发送动作标签。</p>
 </li>
 <li>
-<p>同步模式</p>
+<p>异步（无标签）模式</p>
 <p>实验开始后，“后台”程序周期性地，主动向“主控”程序发送动作标签；
 动作标签是对连续的脑电数据进行加窗而计算得到的。</p>
 </li>
@@ -782,21 +782,22 @@ hue-6-2: #e6c07b
 </div></code></pre>
 </li>
 </ol>
-<h2 id="异步模式">异步模式</h2>
+<h2 id="同步有标签模式">同步（有标签）模式</h2>
 <h3 id="流程图-1">流程图</h3>
 <blockquote>
- <img src="file:///c:\Users\liste\OneDrive\Laptop\BCIMiddleware\fileWorks\异步模式.png" alt="./异步模式.png" width="600px">
+ <img src="file:///c:\Users\liste\OneDrive\Laptop\BCIMiddleware\fileWorks\有标签模式.png" alt="./有标签模式.png" width="600px">
 <p>图 2 训练模式示意图</p>
 </blockquote>
 <h3 id="消息定义-1">消息定义</h3>
 <ol>
 <li>
 <p>开始采集消息</p>
-<p>由“主控”发送给“后台”，用于开始异步模式。</p>
+<p>由“主控”发送给“后台”，用于开始有标签模式。</p>
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;asynchronous&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
+  <span class="hljs-attr">&quot;updateCount&quot;</span>: <span class="hljs-string">&quot;4&quot;</span>, <span class="hljs-comment">// 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试</span>
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
   <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
 }
@@ -804,14 +805,7 @@ hue-6-2: #e6c07b
 </li>
 <li>
 <p>计算标签消息</p>
-<p>由“主控”发送给“后台”，用于要求后者计算动作标签。
-包括“验证”和“测试”两种模式，“主控”应根据情况主动发送正确的模式内容。</p>
-<p>消息约定</p>
-<pre><code class="language-json"><div>{
-  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;computeLabel&quot;</span>,
-  <span class="hljs-attr">&quot;mode&quot;</span>: <span class="hljs-string">&quot;valid&quot;</span> <span class="hljs-comment">// 模式标签，&quot;valid&quot;:验证; &quot;test&quot;:测试.</span>
-}
-</div></code></pre>
+<p>由“游戏”以在脑电数据中打标签的形式发送给“后台”，用于要求后者计算动作标签。</p>
 </li>
 <li>
 <p>结束采集消息</p>
@@ -819,7 +813,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopSession&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;asynchronous&quot;</span>
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>
 }
 </div></code></pre>
 </li>
@@ -839,16 +833,16 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;asynchronous&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
 }
 </div></code></pre>
 </li>
 </ol>
-<h2 id="同步模式">同步模式</h2>
+<h2 id="异步无标签模式">异步（无标签）模式</h2>
 <h3 id="流程图-2">流程图</h3>
 <blockquote>
- <img src="file:///c:\Users\liste\OneDrive\Laptop\BCIMiddleware\fileWorks\同步模式.png" alt="./同步模式.png" width="600px">
+ <img src="file:///c:\Users\liste\OneDrive\Laptop\BCIMiddleware\fileWorks\无标签模式.png" alt="./无标签模式.png" width="600px">
 <p>图 2 训练模式示意图</p>
 </blockquote>
 <h3 id="消息定义-2">消息定义</h3>
@@ -859,7 +853,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
   <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
 }
@@ -871,7 +865,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopSession&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>
 }
 </div></code></pre>
 </li>
@@ -892,7 +886,7 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;synchronous&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
 }
 </div></code></pre>

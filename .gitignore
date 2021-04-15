@@ -1,3 +1,4 @@
+*.npy
 fileWorks/*.png
 fileWorks/*.xmind
 private

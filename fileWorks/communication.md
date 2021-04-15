@@ -5,10 +5,10 @@
   - [训练模式](#训练模式)
     - [流程图](#流程图)
     - [消息定义](#消息定义)
-  - [异步模式](#异步模式)
+  - [同步（有标签）模式](#同步有标签模式)
     - [流程图](#流程图-1)
     - [消息定义](#消息定义-1)
-  - [同步模式](#同步模式)
+  - [异步（无标签）模式](#异步无标签模式)
     - [流程图](#流程图-2)
     - [消息定义](#消息定义-2)
   - [其他消息](#其他消息)
@@ -34,12 +34,12 @@
 
    用于用户在正式使用前进行算法训练。
 
-2. 异步模式
+2. 同步（有标签）模式
 
-   实验开始后，“主控”程序向“后台”程序发送计算请求；
+   实验开始后，“游戏”程序通过打并口的方式向“后台”程序发送计算请求；
    “后台”程序接到要求后，根据近期脑电数据，计算并发送动作标签。
 
-3. 同步模式
+3. 异步（无标签）模式
 
    实验开始后，“后台”程序周期性地，主动向“主控”程序发送动作标签；
    动作标签是对连续的脑电数据进行加窗而计算得到的。
@@ -97,11 +97,11 @@
    }
    ```
 
-## 异步模式
+## 同步（有标签）模式
 
 ### 流程图
 
->  <img src="./异步模式.png" alt="./异步模式.png" width="600px">
+>  <img src="./有标签模式.png" alt="./有标签模式.png" width="600px">
 >
 > 图 2 训练模式示意图
 
@@ -109,14 +109,15 @@
 
 1. 开始采集消息
 
-   由“主控”发送给“后台”，用于开始异步模式。
+   由“主控”发送给“后台”，用于开始有标签模式。
 
    消息约定
 
    ```json
    {
      "method": "startSession",
-     "sessionName": "asynchronous",
+     "sessionName": "youbiaoqian",
+     "updateCount": "4", // 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试
      "dataPath": "./data/latestData.csv", // 实验数据将存储于此，目录应存在，文件应不存在
      "modelPath": "./module/latestModel.csv" // 模型数据，文件应存在
    }
@@ -124,17 +125,7 @@
 
 2. 计算标签消息
 
-   由“主控”发送给“后台”，用于要求后者计算动作标签。
-   包括“验证”和“测试”两种模式，“主控”应根据情况主动发送正确的模式内容。
-
-   消息约定
-
-   ```json
-   {
-     "method": "computeLabel",
-     "mode": "valid" // 模式标签，"valid":验证; "test":测试.
-   }
-   ```
+   由“游戏”以在脑电数据中打标签的形式发送给“后台”，用于要求后者计算动作标签。
 
 3. 结束采集消息
 
@@ -145,7 +136,7 @@
    ```json
    {
      "method": "stopSession",
-     "sessionName": "asynchronous"
+     "sessionName": "youbiaoqian"
    }
    ```
 
@@ -171,16 +162,16 @@
    ```json
    {
      "method": "sessionStopped",
-     "sessionName": "asynchronous",
+     "sessionName": "youbiaoqian",
      "dataPath": "./data/latestData.csv" // 实验数据已存储于此
    }
    ```
 
-## 同步模式
+## 异步（无标签）模式
 
 ### 流程图
 
->  <img src="./同步模式.png" alt="./同步模式.png" width="600px">
+>  <img src="./无标签模式.png" alt="./无标签模式.png" width="600px">
 >
 > 图 2 训练模式示意图
 
@@ -195,7 +186,7 @@
    ```json
    {
      "method": "startSession",
-     "sessionName": "synchronous",
+     "sessionName": "wubiaoqian",
      "dataPath": "./data/latestData.csv", // 实验数据将存储于此，目录应存在，文件应不存在
      "modelPath": "./module/latestModel.csv" // 模型数据，文件应存在
    }
@@ -210,7 +201,7 @@
    ```json
    {
      "method": "stopSession",
-     "sessionName": "synchronous"
+     "sessionName": "wubiaoqian"
    }
    ```
 
@@ -237,7 +228,7 @@
    ```json
    {
      "method": "sessionStopped",
-     "sessionName": "synchronous",
+     "sessionName": "wubiaoqian",
      "dataPath": "./data/latestData.csv" // 实验数据已存储于此
    }
    ```

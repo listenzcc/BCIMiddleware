@@ -25,9 +25,6 @@ class TrainModule(object):
         - @filepath: The path of the file to be stored;
         - @decoderpath: The path of the decoder to be stored.
         '''
-        print('------------------------------------------')
-        print(filepath, decoderpath)
-
         # Necessary parameters
         self.filepath = filepath
         self.decoderpath = decoderpath
@@ -43,6 +40,10 @@ class TrainModule(object):
         data = self.ds.get_data()
         decoder = self.decoderpath
 
+        if os.path.isfile(decoder):
+            logger.warning(
+                f'File exists (decoder) "{decoder}", overriding it.')
+
         # todo: Train decoder
         logger.info(
             f'Trained {decoder} with {data.shape}, save the decoder to {self.decoderpath}')
@@ -50,7 +51,7 @@ class TrainModule(object):
         # todo: Save decoder
         logger.info(f'Saved the decoder to {self.decoderpath}')
 
-        with open(self.decoderpath, 'w') as f:
+        with open(decoder, 'w') as f:
             f.writelines([
                 f'Trained {decoder} with {data.shape}, save the decoder to {self.decoderpath}',
                 '\n',
@@ -101,7 +102,7 @@ class ActiveModule(object):
 
         Args:
         - @filepath: The path of the file to be stored;
-        - @decoderpath: The path of the decoder exists;
+        - @decoderpath: The path of the decoder;
         - @interval: The path of the timely job;
         - @send: The sending method.
         '''
@@ -199,12 +200,13 @@ class PassiveModule(object):
     3. Stop to save the data.
     '''
 
-    def __init__(self, filepath, decoderpath, update_count, send):
+    def __init__(self, filepath, decoderpath, updatedecoderpath, update_count, send):
         ''' Initialize the passive module,
 
         Args:
         - @filepath: The path of the file to be stored;
-        - @decoderpath: The path of the decoder exists;
+        - @decoderpath: The path of the decoder;
+        - @updatedecoderpath: The path of the updated decoder;
         - @update_count: How many trials for update the module;
         - @send: The sending method.
         '''
@@ -212,6 +214,7 @@ class PassiveModule(object):
         # Necessary parameters
         self.filepath = filepath
         self.decoderpath = decoderpath
+        self.updatedecoderpath = updatedecoderpath
 
         # Start collecting data
         self.ds = DataStack(filepath)
@@ -231,6 +234,26 @@ class PassiveModule(object):
         # todo: Load decoder
         self.decoder = self.decoderpath
 
+    def save_updatedecoder(self):
+        # Save the updated decoder
+        data = self.ds.get_data()
+        decoder = self.updatedecoderpath
+
+        if os.path.isfile(decoder):
+            logger.warning(
+                f'File exists (decoder) "{decoder}", overriding it.')
+
+        # todo: Save decoder
+        logger.info(f'Saved the decoder to {self.updatedecoderpath}')
+
+        with open(decoder, 'w') as f:
+            f.writelines([
+                f'Trained {decoder} with {data.shape}, save the decoder to {self.updatedecoderpath}',
+                '\n',
+                f'The data is stored in {self.filepath}'
+                '\n',
+            ])
+
     def receive(self, dct):
         logger.debug(f'Passive module received {dct}')
 
@@ -245,6 +268,7 @@ class PassiveModule(object):
             self.ds.stop()
             self.ds.save()
             self.ds.close()
+            self.save_updatedecoder()
 
             logger.debug(f'Passive module stopped.')
             return 0, dict(

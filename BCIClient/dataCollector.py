@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from . import logger, cfg
@@ -81,8 +82,11 @@ class DataStack(object):
     def save(self):
         # Save the data to the disk
         d = self.get_data()
-        print(f'Saving the data ({d.shape}) to {self.filepath}')
+        if os.path.isfile(self.filepath):
+            logger.warning(
+                f'File exists (data) "{self.filepath}", overriding it.')
         np.save(self.filepath, d)
+        logger.debug(f'Saved the data ({d.shape}) to {self.filepath}')
 
     def report(self):
         # Report the current state of the stack,
@@ -101,11 +105,11 @@ class DataStack(object):
         d = self.get_data()
         if len(d.shape) == 1:
             logger.warning(
-                f'There is not enough data for your request of length={length} seconds')
+                f'There is not enough data for your request of length={length} seconds, current length is 1.')
             return d.reshape((len(d), 1))
 
         if d.shape[1] < n:
             logger.warning(
-                f'There is not enough data for your request of length={length} seconds')
+                f'There is not enough data for your request of length={length} seconds, current length is {d.shape[1]}.')
 
         return d[:, -n:]

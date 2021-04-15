@@ -4,6 +4,7 @@ Aim: Define TCP client object for BCI application.
 '''
 
 # Imports
+import os
 import socket
 import threading
 import traceback
@@ -63,8 +64,9 @@ class TCPClient(object):
         logger.info(f'TCP Client is initialized as {name} to {IP}')
 
         self.module = None
+
         # Keep listening
-        client.listen()
+        self.keep_listen()
 
     def close(self):
         ''' Close the session '''
@@ -74,10 +76,10 @@ class TCPClient(object):
         if self.module is not None:
             self.module.ds.stop()
 
-        logger.info(f'Client closed: {self.address}')
+        logger.info(f'Client closed: {self.serverIP}')
 
-    def _listen(self):
-        ''' Listen to the server.
+    def keep_listen(self):
+        ''' Keep listening to the server.
         - Received the message;
         - Send reply;
         - It will be closed if it receives empty message or error occurs.
@@ -103,9 +105,9 @@ class TCPClient(object):
                 # send invalid message error.
                 if dct is None:
                     self.send(invalidMessageError(income,
-                                                  comment=f'Illegal JSON from {self.address}'))
+                                                  comment=f'Illegal JSON from {self.serverIP}'))
                     continue
-                logger.debug(f'Parsed message "{dct}" from {self.address}')
+                logger.debug(f'Parsed message "{dct}" from {self.serverIP}')
 
                 # ----------------------------------------------------------------
                 # Keep alive message
@@ -176,6 +178,11 @@ class TCPClient(object):
                             interval=active_interval,
                             send=self.send
                         )
+                        _decoder = kwargs['decoderpath']
+                        if not os.path.isfile(_decoder):
+                            logger.error(f'File not found: {_decoder}')
+                            raise FileNotFoundError(
+                                f'File not found: {_decoder}')
                     except:
                         error = traceback.format_exc()
                         logger.error(
@@ -194,6 +201,8 @@ class TCPClient(object):
                             f'Failed start active module for "{subjectID}" - "{sessionCount}", error is "{error}"')
                         self.send(operationFailedError(income, comment=error))
                         continue
+
+                    continue
 
                 # ----------------------------------------------------------------
                 # Start Passive Module
@@ -218,9 +227,15 @@ class TCPClient(object):
                         kwargs = dict(
                             filepath=_path['data'],
                             decoderpath=_path['model'],
+                            updatedecoderpath=_path['model_update'],
                             update_count=updateCount,
                             send=self.send,
                         )
+                        _decoder = kwargs['decoderpath']
+                        if not os.path.isfile(_decoder):
+                            logger.error(f'File not found: {_decoder}')
+                            raise FileNotFoundError(
+                                f'File not found: {_decoder}')
                     except:
                         error = traceback.format_exc()
                         logger.error(
@@ -240,13 +255,15 @@ class TCPClient(object):
                         self.send(operationFailedError(income, comment=error))
                         continue
 
+                    continue
+
                 # ----------------------------------------------------------------
                 # Feed
                 if self.module is not None:
                     success, rdct = self.module.receive(dct)
 
                     logger.debug(
-                        f'Module receives {dct}, operation returns {success}:{rdct}')
+                        f'Module received {dct}, operation returned {success}:{rdct}')
 
                     if success == 0:
                         self.send(rdct)
@@ -258,16 +275,22 @@ class TCPClient(object):
                     if self.module.stopped:
                         self.module = None
                         logger.info(
-                            f'Current module stopped for {self.address}.')
+                            f'Current module stopped for {self.serverIP}.')
 
                     continue
 
                 # ----------------------------------------------------------------
                 # No operation is done
                 self.send(invalidMessageError(income,
-                                              comment=f'Invalid operation from {self.address}'))
+                                              comment=f'Invalid operation from {self.serverIP}'))
+
+            except KeyboardInterrupt:
+                logger.error(f'Keyboard Interruption is detected')
+                break
+
             except ConnectionResetError as err:
-                logger.warning(f'Connection reset occurs. It can be normal.')
+                logger.warning(
+                    f'Connection reset occurs. It can be normal when server closes the connection.')
                 break
 
             except Exception as err:
@@ -300,4 +323,4 @@ class TCPClient(object):
         else:
             msg = encode(message)
         self.client.sendall(msg)
-        self.debug(f'Sent "{msg}" to {self.serverIP}')
+        logger.debug(f'Sent "{msg}" to {self.serverIP}')

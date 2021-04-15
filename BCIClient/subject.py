@@ -27,7 +27,9 @@ class BCISubject(object):
         - @subjectID: The ID of the subject, it should be unique;
         - @folder: The folder of subjects, it exists in prior, it has default value.
         '''
-        assert(os.path.isdir(folder))
+        if not os.path.isdir(folder):
+            logger.error(f'Folder does not exist: "{folder}"')
+            raise FileNotFoundError(f'Folder not found: "{folder}"')
 
         self.subjectID = subjectID
         subjectFolder = os.path.join(folder, subjectID)
@@ -65,7 +67,7 @@ class BCISubject(object):
         Args:
         - @idx: The count of the experiment.
         '''
-        path = os.path.join(self.subjectFolder['youbiaoqian'], f'{idx}')
+        path = os.path.join(self.subFolders['youbiaoqian'], f'{idx}')
         create(path)
 
     def get_youbiaoqian_path(self, idx):
@@ -78,6 +80,8 @@ class BCISubject(object):
             data=os.path.join(
                 self.subFolders['youbiaoqian'], f'{idx}', 'data.npy'),
             model=os.path.join(
+                self.subFolders['training'], 'model.txt'),
+            model_update=os.path.join(
                 self.subFolders['youbiaoqian'], f'{idx}', 'model.txt')
         )
         return path
@@ -88,7 +92,7 @@ class BCISubject(object):
         Args:
         - @idx: The count of the experiment.
         '''
-        path = os.path.join(self.subjectFolder['wubiaoqian'], f'{idx}')
+        path = os.path.join(self.subFolders['wubiaoqian'], f'{idx}')
         create(path)
 
     def get_wubiaoqian_path(self, idx):
@@ -100,5 +104,6 @@ class BCISubject(object):
         path = dict(
             data=os.path.join(
                 self.subFolders['wubiaoqian'], f'{idx}', 'data.npy'),
+            model=os.path.join(self.subFolders['training'], 'model.txt')
         )
         return path

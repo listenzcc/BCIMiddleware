@@ -67,7 +67,7 @@ coding = cfg['TCP']['coding']
 def decode(content, coding=coding):
     ''' Decode [content] if necessary '''
     t = type(content)
-    logger.debug(f'Decode "{content}", {t}')
+    logger.debug(f'Decoding "{content}", {t}')
     if isinstance(content, type(b'')):
         return content.decode(coding)
     else:
@@ -77,7 +77,7 @@ def decode(content, coding=coding):
 def encode(content, coding=coding):
     ''' Encode [content] if necessary '''
     t = type(content)
-    logger.debug(f'Encode "{content}", {t}')
+    logger.debug(f'Encoding "{content}", {t}')
     if isinstance(content, type('')):
         return content.encode(coding)
     else:

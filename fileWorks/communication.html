@@ -754,8 +754,7 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>,
-  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
-  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据将存储于此，目录应存在，文件应不存在</span>
+  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span> <span class="hljs-comment">// 被试名</span>
 }
 </div></code></pre>
 </li>
@@ -775,14 +774,14 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>,
-  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据已存储于此</span>
-  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据已存储于此</span>
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>
 }
 </div></code></pre>
 </li>
 </ol>
 <h2 id="同步有标签模式">同步（有标签）模式</h2>
+<p>同步模式是有标签的在线实验，前若干个标签是用于更新数据（称为验证阶段），因此会对已有的模型进行更新。
+模型更新过程在通信过程中有所体现。</p>
 <h3 id="流程图-1">流程图</h3>
 <blockquote>
  <img src="file:///c:\Users\liste\OneDrive\Laptop\BCIMiddleware\fileWorks\有标签模式.png" alt="./有标签模式.png" width="600px">
@@ -797,9 +796,9 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
-  <span class="hljs-attr">&quot;updateCount&quot;</span>: <span class="hljs-string">&quot;4&quot;</span>, <span class="hljs-comment">// 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试</span>
-  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
-  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
+  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span>, <span class="hljs-comment">// 被试名</span>
+  <span class="hljs-attr">&quot;sessionCount&quot;</span>: <span class="hljs-string">&quot;1&quot;</span>, <span class="hljs-comment">// 第几次同异步实验</span>
+  <span class="hljs-attr">&quot;updateCount&quot;</span>: <span class="hljs-string">&quot;4&quot;</span> <span class="hljs-comment">// 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试</span>
 }
 </div></code></pre>
 </li>
@@ -834,7 +833,9 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
-  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
+  <span class="hljs-attr">&quot;accuracy&quot;</span>: <span class="hljs-string">&quot;0.95&quot;</span>, <span class="hljs-comment">// 同步在线实验中的总体准确率数值，&quot;0.95&quot; 代表所有试次中，有95%的试次分类正确</span>
+  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span>, <span class="hljs-comment">// 被试名</span>
+  <span class="hljs-attr">&quot;sessionCount&quot;</span>: <span class="hljs-string">&quot;1&quot;</span> <span class="hljs-comment">// 第几次同异步实验</span>
 }
 </div></code></pre>
 </li>
@@ -854,8 +855,8 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
-  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span>, <span class="hljs-comment">// 实验数据将存储于此，目录应存在，文件应不存在</span>
-  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;./module/latestModel.csv&quot;</span> <span class="hljs-comment">// 模型数据，文件应存在</span>
+  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span>, <span class="hljs-comment">// 被试名</span>
+  <span class="hljs-attr">&quot;sessionCount&quot;</span>: <span class="hljs-string">&quot;1&quot;</span> <span class="hljs-comment">// 第几次异步实验</span>
 }
 </div></code></pre>
 </li>
@@ -887,7 +888,8 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;sessionStopped&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
-  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;./data/latestData.csv&quot;</span> <span class="hljs-comment">// 实验数据已存储于此</span>
+  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span>, <span class="hljs-comment">// 被试名</span>
+  <span class="hljs-attr">&quot;sessionCount&quot;</span>: <span class="hljs-string">&quot;1&quot;</span> <span class="hljs-comment">// 第几次异步实验</span>
 }
 </div></code></pre>
 </li>
@@ -968,33 +970,23 @@ hue-6-2: #e6c07b
 <tbody>
 <tr>
 <td>1</td>
-<td>folderInvalid</td>
-<td>应存在的目录不存在</td>
+<td>modelNotFound</td>
+<td>模型不存在</td>
 </tr>
 <tr>
 <td>2</td>
-<td>fileInvalid</td>
-<td>应存在的文件不存在</td>
+<td>deviceError</td>
+<td>无法获取脑电数据、或获取数据不正常</td>
 </tr>
 <tr>
 <td>3</td>
-<td>fileExists</td>
-<td>不应存在的文件存在</td>
+<td>computeError</td>
+<td>无法完成标签计算</td>
 </tr>
 <tr>
 <td>4</td>
-<td>fileWrong</td>
-<td>无法正常载入文件</td>
-</tr>
-<tr>
-<td>5</td>
-<td>deviceError</td>
-<td>无法获取合格的脑电数据</td>
-</tr>
-<tr>
-<td>6</td>
-<td>computeError</td>
-<td>无法完成标签计算</td>
+<td>fileError</td>
+<td>无法获取或存储数据</td>
 </tr>
 <tr>
 <td><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\infty</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord">∞</span></span></span></span></td>

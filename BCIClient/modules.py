@@ -59,6 +59,7 @@ class TrainModule(object):
             ])
 
     def receive(self, dct):
+        logger.debug(f'Training module received {dct}')
         method = dct.get('method', None)
 
         if method == 'stopSession':
@@ -71,6 +72,8 @@ class TrainModule(object):
             self.generate_decoder()
             self.ds.save()
             self.ds.close()
+
+            logger.debug(f'Training module stopped')
             return 0, dict(
                 method='sessionStopped',
                 sessionName='training',
@@ -109,7 +112,7 @@ class ActiveModule(object):
         self.interval = interval
 
         # Start collecting data
-        self.ds = DataStack(filepath, **kwargs)
+        self.ds = DataStack(filepath)
         self.ds.start()
 
         # Load the decoder
@@ -119,11 +122,15 @@ class ActiveModule(object):
 
         self.stopped = False
 
+        logger.debug(
+            f'Active module starts as {filepath}, {decoderpath}, {interval}')
+
     def load_decoder(self):
         # todo: Load decoder
         self.decoder = self.decoderpath
 
     def _keep_active(self, send):
+        logger.debug(f'Active module timely job starts.')
         while self.state == 'alive':
             # Get data
             d = self.ds.latest()
@@ -140,6 +147,7 @@ class ActiveModule(object):
             send(out)
 
             time.sleep(self.interval)
+        logger.debug(f'Active module timely job stops.')
 
     def timely_job(self, send):
         ''' The timely job method
@@ -153,9 +161,12 @@ class ActiveModule(object):
         thread.start()
 
     def receive(self, dct):
-        method = dct.get('method', None)
+        logger.debug(f'Active module received {dct}')
 
-        if method == 'stopSession':
+        method = dct.get('method', None)
+        name = dct.get('sessionName', None)
+
+        if method == 'stopSession' and name == 'wubiaoqian':
             # Stop active session,
             # 1. Stop collecting data;
             # 2. Save the data to the disk
@@ -165,9 +176,11 @@ class ActiveModule(object):
             self.ds.save()
             self.ds.close()
 
+            logger.debug(f'Active module stopped.')
+
             return 0, dict(
                 method='sessionStopped',
-                sessionName='synchronous',
+                sessionName='wubiaoqian',
                 dataPath=self.filepath
             )
 
@@ -186,12 +199,14 @@ class PassiveModule(object):
     3. Stop to save the data.
     '''
 
-    def __init__(self, filepath, decoderpath):
+    def __init__(self, filepath, decoderpath, update_count, send):
         ''' Initialize the passive module,
 
         Args:
         - @filepath: The path of the file to be stored;
-        - @decoderpath: The path of the decoder exists.
+        - @decoderpath: The path of the decoder exists;
+        - @update_count: How many trials for update the module;
+        - @send: The sending method.
         '''
 
         # Necessary parameters
@@ -199,40 +214,30 @@ class PassiveModule(object):
         self.decoderpath = decoderpath
 
         # Start collecting data
-        self.ds = DataStack(filepath, **kwargs)
+        self.ds = DataStack(filepath)
         self.ds.start()
 
         # Load the decoder
         self.load_decoder()
 
+        self.update_count = update_count
+        self.send = send
+
         self.stopped = False
+        logger.debug(
+            f'Passive module starts as {filepath}, {decoderpath}, {update_count}')
 
     def load_decoder(self):
         # todo: Load decoder
         self.decoder = self.decoderpath
 
     def receive(self, dct):
+        logger.debug(f'Passive module received {dct}')
+
         method = dct.get('method', None)
+        name = dct.get('sessionName', None)
 
-        if method == 'computeLabel':
-            # Compute event on query,
-            # 1. Get the latest data;
-            # 2. Compute the event using decoder and data.
-
-            # Get data
-            d = self.ds.latest()
-            logger.debug(
-                f'Got the latest data from device, shape is {d.shape}')
-
-            # todo: Compute event
-            out = (self.decoder, d.shape)
-            label = '1'
-            return 0, dict(
-                method='labelComputed',
-                label=label
-            )
-
-        if method == 'stopSession':
+        if method == 'stopSession' and name == 'youbiaoqian':
             # Stop passive session,
             # 1. Stop collecting data;
             # 2. Save the data to the disk
@@ -241,9 +246,10 @@ class PassiveModule(object):
             self.ds.save()
             self.ds.close()
 
+            logger.debug(f'Passive module stopped.')
             return 0, dict(
                 method='sessionStopped',
-                sessionName='asynchronous',
+                sessionName='youbiaoqian',
                 dataPath=self.filepath
             )
 

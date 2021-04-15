@@ -64,8 +64,7 @@
    {
      "method": "startSession",
      "sessionName": "training",
-     "dataPath": "./data/latestData.csv", // 实验数据将存储于此，目录应存在，文件应不存在
-     "modelPath": "./module/latestModel.csv" // 模型数据将存储于此，目录应存在，文件应不存在
+     "subjectID": "subject-1" // 被试名
    }
    ```
 
@@ -91,13 +90,14 @@
    ```json
    {
      "method": "sessionStopped",
-     "sessionName": "training",
-     "dataPath": "./data/latestData.csv", // 实验数据已存储于此
-     "modelPath": "./module/latestModel.csv" // 模型数据已存储于此
+     "sessionName": "training"
    }
    ```
 
 ## 同步（有标签）模式
+
+同步模式是有标签的在线实验，前若干个标签是用于更新数据（称为验证阶段），因此会对已有的模型进行更新。
+模型更新过程在通信过程中有所体现。
 
 ### 流程图
 
@@ -117,9 +117,9 @@
    {
      "method": "startSession",
      "sessionName": "youbiaoqian",
-     "updateCount": "4", // 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试
-     "dataPath": "./data/latestData.csv", // 实验数据将存储于此，目录应存在，文件应不存在
-     "modelPath": "./module/latestModel.csv" // 模型数据，文件应存在
+     "subjectID": "subject-1", // 被试名
+     "sessionCount": "1", // 第几次同异步实验
+     "updateCount": "4" // 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试
    }
    ```
 
@@ -163,7 +163,9 @@
    {
      "method": "sessionStopped",
      "sessionName": "youbiaoqian",
-     "dataPath": "./data/latestData.csv" // 实验数据已存储于此
+     "accuracy": "0.95", // 同步在线实验中的总体准确率数值，"0.95" 代表所有试次中，有95%的试次分类正确
+     "subjectID": "subject-1", // 被试名
+     "sessionCount": "1" // 第几次同异步实验
    }
    ```
 
@@ -187,8 +189,8 @@
    {
      "method": "startSession",
      "sessionName": "wubiaoqian",
-     "dataPath": "./data/latestData.csv", // 实验数据将存储于此，目录应存在，文件应不存在
-     "modelPath": "./module/latestModel.csv" // 模型数据，文件应存在
+     "subjectID": "subject-1", // 被试名
+     "sessionCount": "1" // 第几次异步实验
    }
    ```
 
@@ -229,7 +231,8 @@
    {
      "method": "sessionStopped",
      "sessionName": "wubiaoqian",
-     "dataPath": "./data/latestData.csv" // 实验数据已存储于此
+     "subjectID": "subject-1", // 被试名
+     "sessionCount": "1" // 第几次异步实验
    }
    ```
 
@@ -313,15 +316,13 @@
 
 > 表 1、Detail 字段典型值对照表
 >
-> | 顺序     | detail 字段    | 典型情况                 |
-> | -------- | -------------- | ------------------------ |
-> | 1        | folderInvalid  | 应存在的目录不存在       |
-> | 2        | fileInvalid    | 应存在的文件不存在       |
-> | 3        | fileExists     | 不应存在的文件存在       |
-> | 4        | fileWrong      | 无法正常载入文件         |
-> | 5        | deviceError    | 无法获取合格的脑电数据   |
-> | 6        | computeError   | 无法完成标签计算         |
-> | $\infty$ | undefinedError | 不属于以上的其他错误情况 |
+> | 顺序     | detail 字段    | 典型情况                           |
+> | -------- | -------------- | ---------------------------------- |
+> | 1        | modelNotFound  | 模型不存在                         |
+> | 2        | deviceError    | 无法获取脑电数据、或获取数据不正常 |
+> | 3        | computeError   | 无法完成标签计算                   |
+> | 4        | fileError      | 无法获取或存储数据                 |
+> | $\infty$ | undefinedError | 不属于以上的其他错误情况           |
 
 注：在实际使用过程中，错误检查的顺序与上表相同，遇到错误立即返回，不再继续进行后续检查；
 另外，在实际使用中也可能出现多个错误均有可能性的情况，将使用多个 detail 字段进行描述；

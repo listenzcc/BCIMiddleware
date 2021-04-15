@@ -33,6 +33,8 @@ tcp_params = dict(
     coding=cfg['TCP']['coding']
 )
 
+active_interval = int(cfg['Online']['wubiaoqianInterval'])
+
 # Logging
 logger_kwargs['name'] = 'BCIClient'
 logger_kwargs['level_console'] = eval(

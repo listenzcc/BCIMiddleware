@@ -178,11 +178,6 @@ class TCPClient(object):
                             interval=active_interval,
                             send=self.send
                         )
-                        _decoder = kwargs['decoderpath']
-                        if not os.path.isfile(_decoder):
-                            logger.error(f'File not found: {_decoder}')
-                            raise FileNotFoundError(
-                                f'File not found: {_decoder}')
                     except:
                         error = traceback.format_exc()
                         logger.error(
@@ -231,11 +226,6 @@ class TCPClient(object):
                             update_count=updateCount,
                             send=self.send,
                         )
-                        _decoder = kwargs['decoderpath']
-                        if not os.path.isfile(_decoder):
-                            logger.error(f'File not found: {_decoder}')
-                            raise FileNotFoundError(
-                                f'File not found: {_decoder}')
                     except:
                         error = traceback.format_exc()
                         logger.error(

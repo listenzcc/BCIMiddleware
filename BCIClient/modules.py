@@ -4,6 +4,7 @@ import threading
 
 from . import logger
 from .dataCollector import DataStack
+from .BCIDecoder import BCIDecoder
 
 
 def load_decoder(path):
@@ -38,26 +39,21 @@ class TrainModule(object):
     def generate_decoder(self):
         # Generate and save decoder
         data = self.ds.get_data()
-        decoder = self.decoderpath
+        decoder = BCIDecoder()
+        decoderpath = self.decoderpath
 
-        if os.path.isfile(decoder):
+        if os.path.isfile(decoderpath):
             logger.warning(
-                f'File exists (decoder) "{decoder}", overriding it.')
+                f'File exists (decoder) "{decoderpath}", it will be overridden.')
 
-        # todo: Train decoder
+        # Train decoder
+        decoder.fit(data)
         logger.info(
-            f'Trained {decoder} with {data.shape}, save the decoder to {self.decoderpath}')
+            f'Trained {decoder} with {data.shape}, save the decoder to {decoderpath}')
 
-        # todo: Save decoder
-        logger.info(f'Saved the decoder to {self.decoderpath}')
-
-        with open(decoder, 'w') as f:
-            f.writelines([
-                f'Trained {decoder} with {data.shape}, save the decoder to {self.decoderpath}',
-                '\n',
-                f'The data is stored in {self.filepath}'
-                '\n',
-            ])
+        # Save decoder
+        decoder.save_model(decoderpath)
+        logger.info(f'Saved the decoder to {decoderpath}')
 
     def receive(self, dct):
         logger.debug(f'Training module received {dct}')
@@ -70,9 +66,9 @@ class TrainModule(object):
             # 3. Save the data to the disk
             self.stopped = True
             self.ds.stop()
-            self.generate_decoder()
             self.ds.save()
             self.ds.close()
+            self.generate_decoder()
 
             logger.debug(f'Training module stopped')
             return 0, dict(

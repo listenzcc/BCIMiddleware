@@ -3,11 +3,65 @@ import struct
 import socket
 import threading
 import numpy as np
+from .BCIDecoder import generate_simulation_data
 
 from . import logger
 
 simulationMode = True
 maxLength = 3600  # Seconds
+
+
+class SimulationDataGenerator(object):
+    ''' Generate simulation data '''
+
+    def __init__(self):
+        ''' Initialize the simulation data '''
+        self.all_data, _ = generate_simulation_data()
+        self.raw = self.all_data.copy()
+        self.ptr = 0
+        logger.debug(f'Simulation data ({self.all_data.shape}) is generated.')
+
+    def reset(self):
+        ''' Reset the simulation data generator,
+        the generator will work as it was initialized.
+        '''
+        self.all_data = self.raw
+        self.ptr = 0
+        logger.debug(
+            f'Simulation restarted from begining, the data has been restored.')
+
+    def pop(self, length=40):
+        ''' Pop the simulation data from the top [length]
+
+        Args:
+        - @length: The length to be popped from the top.
+        '''
+        if length < self.all_data.shape[1]:
+            d = self.all_data[:, :length]
+            self.all_data = self.all_data[:, length:]
+            # logger.debug(f'Normally fetch data for {length}.')
+            return d
+
+        if length == self.all_data.shape[1]:
+            d = self.all_data.copy()
+            # logger.debug(f'Normally fetch data for {length}.')
+            self.all_data = self.raw
+            logger.debug(f'Current data is empty, restart from begining.')
+            return d
+
+        if length < self.all_data.shape[1]:
+            d0 = self.all_data.copy()
+            logger.debug(f'Partly fetch data 1 for {d0.shape[1]}.')
+            self.all_data = self.raw
+            logger.debug(f'Current data is empty, restart from begining.')
+            length -= d0.shape[1]
+            d1 = self.all_data[:, :length]
+            logger.debug(f'Partly fetch data 2 for {length}.')
+            self.all_data = self.all_data[:, length:]
+            return np.concatenate([d0, d1], axis=1)
+
+        logger.error(f'Can not fetch data as request, length is "{length}"')
+        return None
 
 
 class NeuroScanDeviceClient(object):
@@ -55,6 +109,7 @@ class NeuroScanDeviceClient(object):
         if not simulationMode:
             self.connect()
         else:
+            self.sdg = SimulationDataGenerator()
             logger.info(f'Simulation mode is used')
 
     def _clear(self):
@@ -170,6 +225,7 @@ class NeuroScanDeviceClient(object):
         self.collecting = True
 
         if self.simulationMode:
+            self.sdg.reset()
             logger.debug(
                 f'Not sending start sending message in simulation mode')
         else:
@@ -212,7 +268,8 @@ class NeuroScanDeviceClient(object):
         '''
         if self.simulationMode:
             time.sleep(self.time_per_packet)
-            return np.ones((self.n_channels, self.packet_time_point))
+            return self.sdg.pop(self.packet_time_point)
+            # return np.ones((self.n_channels, self.packet_time_point))
         else:
             tmp_header = self.receive_data(12)
             details_header = self._unpack_header(tmp_header)

@@ -57,8 +57,17 @@ class BCISubject(object):
         ''' Get the path of trained model and training data '''
         path = dict(
             data=os.path.join(self.subFolders['training'], 'data.npy'),
-            model=os.path.join(self.subFolders['training'], 'model.txt')
+            model=os.path.join(self.subFolders['training'], 'model.dump')
         )
+
+        if os.path.isfile(path['data']):
+            logger.warning(
+                'Training file of {} exists, it may be overridden'.format(path['data']))
+
+        if os.path.isfile(path['model']):
+            logger.warning(
+                'Training model of {} exists, it may be overridden'.format(path['model']))
+
         return path
 
     def set_youbiaoqian(self, idx):
@@ -80,10 +89,24 @@ class BCISubject(object):
             data=os.path.join(
                 self.subFolders['youbiaoqian'], f'{idx}', 'data.npy'),
             model=os.path.join(
-                self.subFolders['training'], 'model.txt'),
+                self.subFolders['training'], 'model.dump'),
             model_update=os.path.join(
-                self.subFolders['youbiaoqian'], f'{idx}', 'model.txt')
+                self.subFolders['youbiaoqian'], f'{idx}', 'model.dump')
         )
+
+        if os.path.isfile(path['data']):
+            logger.warning(
+                'Training file of {} exists, it may be overridden'.format(path['data']))
+
+        if not os.path.isfile(path['model']):
+            msg = 'Can not find model of {}'.format(path['model'])
+            logger.error(msg)
+            raise FileNotFoundError(msg)
+
+        if os.path.isfile(path['model_update']):
+            logger.warning(
+                'Training model update of {} exists, it may be overridden'.format(path['model_update']))
+
         return path
 
     def set_wubiaoqian(self, idx):
@@ -104,6 +127,16 @@ class BCISubject(object):
         path = dict(
             data=os.path.join(
                 self.subFolders['wubiaoqian'], f'{idx}', 'data.npy'),
-            model=os.path.join(self.subFolders['training'], 'model.txt')
+            model=os.path.join(self.subFolders['training'], 'model.dump')
         )
+
+        if os.path.isfile(path['data']):
+            logger.warning(
+                'Training file of {} exists, it may be overridden'.format(path['data']))
+
+        if not os.path.isfile(path['model']):
+            msg = 'Can not find model of {}'.format(path['model'])
+            logger.error(msg)
+            raise FileNotFoundError(msg)
+
         return path

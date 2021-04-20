@@ -53,7 +53,7 @@ def training(send):
         subjectID="subject-1"
     )))
 
-    time.sleep(10)
+    time.sleep(100)
 
     send(pack(dict(
         method='stopSession',

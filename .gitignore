@@ -1,3 +1,5 @@
+BCIDecoder*
+*.dump
 *.npy
 fileWorks/*.png
 fileWorks/*.xmind

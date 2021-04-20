@@ -1,15 +1,11 @@
 import os
 import time
 import threading
+import traceback
 
 from . import logger
 from .dataCollector import DataStack
 from .BCIDecoder import BCIDecoder
-
-
-def load_decoder(path):
-    # todo: Read the decoder on [path]
-    return path
 
 
 class TrainModule(object):
@@ -42,14 +38,8 @@ class TrainModule(object):
         decoder = BCIDecoder()
         decoderpath = self.decoderpath
 
-        if os.path.isfile(decoderpath):
-            logger.warning(
-                f'File exists (decoder) "{decoderpath}", it will be overridden.')
-
         # Train decoder
         decoder.fit(data)
-        logger.info(
-            f'Trained {decoder} with {data.shape}, save the decoder to {decoderpath}')
 
         # Save decoder
         decoder.save_model(decoderpath)
@@ -105,7 +95,6 @@ class ActiveModule(object):
 
         # Necessary parameters
         self.filepath = filepath
-        self.decoderpath = decoderpath
         self.interval = interval
 
         # Start collecting data
@@ -113,7 +102,7 @@ class ActiveModule(object):
         self.ds.start()
 
         # Load the decoder
-        self.load_decoder()
+        self.load_decoder(decoderpath)
 
         self.timely_job(send)
 
@@ -122,28 +111,38 @@ class ActiveModule(object):
         logger.debug(
             f'Active module starts as {filepath}, {decoderpath}, {interval}')
 
-    def load_decoder(self):
-        # todo: Load decoder
-        self.decoder = self.decoderpath
+    def load_decoder(self, decoderpath):
+        # Load decoder
+        self.decoder = BCIDecoder()
+        self.decoder.load_model(decoderpath)
+        logger.debug(f'Loaded decoder of "{decoderpath}"')
 
     def _keep_active(self, send):
         logger.debug(f'Active module timely job starts.')
         while self.state == 'alive':
+            time.sleep(self.interval)
             # Get data
             d = self.ds.latest()
             logger.debug(
                 f'Got the latest data from device, shape is {d.shape}')
 
-            # todo: Compute event
-            label = (self.decoder, d.shape)
-            label = '1'
+            if d.shape[1] < 4000:
+                logger.warning(
+                    f'Not enough data for compute label, doing nothing')
+                continue
+
+            # Compute label
+            d[-1] = 0
+            d[-1, -1] = 33
+            d[-1, 0] = 22
+            label = self.decoder.predict(d)
+            logger.debug(f'Computed label of {label}')
             out = dict(
                 method='labelComputed',
-                label=label
+                label=f'{label}'
             )
             send(out)
 
-            time.sleep(self.interval)
         logger.debug(f'Active module timely job stops.')
 
     def timely_job(self, send):
@@ -209,46 +208,59 @@ class PassiveModule(object):
 
         # Necessary parameters
         self.filepath = filepath
-        self.decoderpath = decoderpath
         self.updatedecoderpath = updatedecoderpath
 
         # Start collecting data
-        self.ds = DataStack(filepath)
+        self.ds = DataStack(filepath,
+                            autoDetectLabelFlag=True,
+                            predict=self.predict)
         self.ds.start()
 
         # Load the decoder
-        self.load_decoder()
+        self.load_decoder(decoderpath, update_count)
 
-        self.update_count = update_count
         self.send = send
+
+        self.results = []
 
         self.stopped = False
         logger.debug(
             f'Passive module starts as {filepath}, {decoderpath}, {update_count}')
 
-    def load_decoder(self):
-        # todo: Load decoder
-        self.decoder = self.decoderpath
+    def load_decoder(self, decoderpath, update_count):
+        # Load decoder
+        self.decoder = BCIDecoder(update_count)
+        self.decoder.load_model(decoderpath)
+        logger.debug(f'Loaded decoder of "{decoderpath}"')
 
     def save_updatedecoder(self):
         # Save the updated decoder
-        data = self.ds.get_data()
-        decoder = self.updatedecoderpath
+        path = self.updatedecoderpath
+        self.decoder.save_model(path)
+        logger.info(f'Saved the updated decoder to {path}')
 
-        if os.path.isfile(decoder):
-            logger.warning(
-                f'File exists (decoder) "{decoder}", overriding it.')
+    def predict(self):
+        try:
+            d = self.ds.latest()
+            label = self.decoder.predict(d)
 
-        # todo: Save decoder
-        logger.info(f'Saved the decoder to {self.updatedecoderpath}')
+            if 11 in d[-1, :]:
+                true_label = 0
+                logger.debug(f'True label: {true_label}')
 
-        with open(decoder, 'w') as f:
-            f.writelines([
-                f'Trained {decoder} with {data.shape}, save the decoder to {self.updatedecoderpath}',
-                '\n',
-                f'The data is stored in {self.filepath}'
-                '\n',
-            ])
+            if 22 in d[-1, :]:
+                true_label = 1
+                logger.debug(f'True label: {true_label}')
+
+            logger.debug(f'Predicted label: {label}')
+            self.send(dict(
+                method='labelComputed',
+                label=f'{label}'
+            ))
+            self.results.append([true_label, label])
+        except:
+            err = traceback.format_exc()
+            logger.warning(f'Failed on predict: {err}')
 
     def receive(self, dct):
         logger.debug(f'Passive module received {dct}')
@@ -267,10 +279,22 @@ class PassiveModule(object):
             self.save_updatedecoder()
 
             logger.debug(f'Passive module stopped.')
+
+            c = 0
+            n = 0
+            for t, p in self.results:
+                n += 1
+                if t == 1 and p == 1:
+                    c += 1
+                if t == 0 and p == 0:
+                    c += 1
+
+            accuracy = c / n
+
             return 0, dict(
                 method='sessionStopped',
                 sessionName='youbiaoqian',
-                dataPath=self.filepath
+                accuracy=f'{accuracy}'
             )
 
         return 1, dict(

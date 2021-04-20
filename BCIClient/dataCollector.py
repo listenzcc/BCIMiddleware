@@ -21,7 +21,7 @@ class DataStack(object):
     - @report: Get the current state of the report.
     '''
 
-    def __init__(self, filepath, eeg_IP=eeg_IP, eeg_port=eeg_port, n_channels=n_channels, freq=freq):
+    def __init__(self, filepath, eeg_IP=eeg_IP, eeg_port=eeg_port, n_channels=n_channels, freq=freq, autoDetectLabelFlag=False, predict=None):
         ''' Initialize the data stack
 
         Args:
@@ -41,7 +41,9 @@ class DataStack(object):
         self.nsclient = NeuroScanDeviceClient(eeg_IP,
                                               eeg_port,
                                               freq,
-                                              n_channels)
+                                              n_channels,
+                                              autoDetectLabelFlag=autoDetectLabelFlag,
+                                              predict=predict)
 
         logger.debug(
             f'Initialized with filepath: {filepath}, n_channels: {n_channels}')
@@ -94,7 +96,7 @@ class DataStack(object):
         d = self.get_data()
         logger.debug(f'Current data shape is: {d.shape}')
 
-    def latest(self, length=4):
+    def latest(self, length=5):
         ''' Get the latest data by the [length]
 
         Args:

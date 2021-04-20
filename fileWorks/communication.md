@@ -163,9 +163,7 @@
    {
      "method": "sessionStopped",
      "sessionName": "youbiaoqian",
-     "accuracy": "0.95", // 同步在线实验中的总体准确率数值，"0.95" 代表所有试次中，有95%的试次分类正确
-     "subjectID": "subject-1", // 被试名
-     "sessionCount": "1" // 第几次同异步实验
+     "accuracy": "0.95" // 同步在线实验中的总体准确率数值，"0.95" 代表所有试次中，有95%的试次分类正确
    }
    ```
 
@@ -230,9 +228,7 @@
    ```json
    {
      "method": "sessionStopped",
-     "sessionName": "wubiaoqian",
-     "subjectID": "subject-1", // 被试名
-     "sessionCount": "1" // 第几次异步实验
+     "sessionName": "wubiaoqian"
    }
    ```
 

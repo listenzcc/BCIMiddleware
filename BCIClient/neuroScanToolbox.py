@@ -78,7 +78,7 @@ class NeuroScanDeviceClient(object):
     5.2. Disconnect from the device, @disconnect.
     '''
 
-    def __init__(self, ip_address, port, sample_rate, n_channels, time_per_packet=0.04, simulationMode=simulationMode, maxLength=maxLength):
+    def __init__(self, ip_address, port, sample_rate, n_channels, time_per_packet=0.04, simulationMode=simulationMode, maxLength=maxLength, autoDetectLabelFlag=False, predict=None):
         '''Initialize with Basic Parameters,
         and connect to the device.
 
@@ -89,7 +89,9 @@ class NeuroScanDeviceClient(object):
         - @n_channels: The number of channels;
         - @time_per_packet: The time gap between two packet from the device, the default value is 0.04 seconds;
         - @simulationMode: If use simulation mode, in simulation mode, the EEG Device is ignored, the data will be automatically generated;
-        - @maxLength: The max length of the data, the unit is in seconds.
+        - @maxLength: The max length of the data, the unit is in seconds;
+        - @autoDetectLabelFlag: The flag of automatically detect 33 label, if it detected, the predict function will be called;
+        - @predict: Predict function, used for autoDetectLabelFlag, it will be called on independent thread when 33 label is detected.
         '''
         self.simulationMode = simulationMode
 
@@ -112,6 +114,12 @@ class NeuroScanDeviceClient(object):
             self.sdg = SimulationDataGenerator()
             logger.info(f'Simulation mode is used')
 
+        self.autoDetectLabelFlag = autoDetectLabelFlag
+        self.predict = predict
+        if self.autoDetectLabelFlag:
+            logger.debug(
+                f'Using auto detect label mode, when 33 received, the predict func will be called')
+
     def _clear(self):
         ''' Clear data '''
         self.data = np.zeros((self.n_channels, maxLength * self.sample_rate))
@@ -130,6 +138,14 @@ class NeuroScanDeviceClient(object):
 
         self.data[:, self.data_length:self.data_length+n] = d
         self.data_length += n
+
+        if 33 in d[-1, :]:
+            self._predict()
+
+    def _predict(self):
+        t = threading.Thread(target=self.predict)
+        t.setDaemon(True)
+        t.start()
 
     def compute_bytes_per_package(self):
         '''Compute the length of bytes in every data packet
@@ -268,8 +284,7 @@ class NeuroScanDeviceClient(object):
         '''
         if self.simulationMode:
             time.sleep(self.time_per_packet)
-            return self.sdg.pop(self.packet_time_point)
-            # return np.ones((self.n_channels, self.packet_time_point))
+            new_data_temp = self.sdg.pop(self.packet_time_point)
         else:
             tmp_header = self.receive_data(12)
             details_header = self._unpack_header(tmp_header)
@@ -287,7 +302,7 @@ class NeuroScanDeviceClient(object):
             new_data_temp[:-1, :] = new_data_trans[:-1, :] * 0.0298  # 单位 uV
             new_data_temp[-1, :] = np.zeros(new_data_trans.shape[1])
 
-            return new_data_temp
+        return new_data_temp
 
     def get_all(self):
         '''Get the accumulated data as a matrix, the shape is (n_channels x time_points(accumulated)).

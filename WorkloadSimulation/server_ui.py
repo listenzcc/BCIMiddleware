@@ -70,7 +70,7 @@ def youbiaoqian(send):
         updateCount="4"
     )))
 
-    time.sleep(10)
+    time.sleep(100)
 
     send(pack(dict(
         method='stopSession',

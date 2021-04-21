@@ -1,3 +1,4 @@
+*.docx
 BCIDecoder*
 *.dump
 *.npy

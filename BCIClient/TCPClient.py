@@ -4,7 +4,7 @@ Aim: Define TCP client object for BCI application.
 '''
 
 # Imports
-import os
+import time
 import socket
 import threading
 import traceback
@@ -17,13 +17,15 @@ from . import logger, tcp_params, decode, encode, pack, unpack, active_interval
 # Keep Alive Message
 
 
-def keepAliveMessage():
-    return pack(dict(method='keepAlive', count='1'))
+def keepAliveMessage(count='0'):
+    ''' Send keep alive message '''
+    return pack(dict(method='keepAlive', count=count))
 
 # Error Messages
 
 
 def invalidMessageError(raw, comment=''):
+    ''' Send error message of invalid message received '''
     logger.error(f'InvalidMessageError: {raw}, {comment}')
     return pack(dict(method='error',
                      reason='invalidMessage',
@@ -32,6 +34,7 @@ def invalidMessageError(raw, comment=''):
 
 
 def operationFailedError(raw, detail='undefinedError', comment=''):
+    ''' Send error message of operation failed '''
     logger.error(f'OperationFailedError: {raw}, {comment}')
     return pack(dict(method='error',
                      reason='operationFailed',
@@ -86,6 +89,10 @@ class TCPClient(object):
         '''
         logger.info(f'Start listening to {self.serverIP}')
 
+        thread = threading.Thread(target=self._keep_send_keepAliveMessages)
+        thread.setDaemon(True)
+        thread.start()
+
         while True:
             try:
                 # ----------------------------------------------------------------
@@ -114,7 +121,13 @@ class TCPClient(object):
                 if all([dct.get('method', None) == 'keepAlive',
                         dct.get('count', None) == '0']):
                     logger.debug(f'Received keepAlive message')
-                    self.send(keepAliveMessage())
+                    self.send(keepAliveMessage('1'))
+                    continue
+
+                if all([dct.get('method', None) == 'keepAlive',
+                        dct.get('count', None) == '1']):
+                    logger.debug(
+                        f'Received replied keepAlive message, doing nothing.')
                     continue
 
                 # ----------------------------------------------------------------
@@ -291,16 +304,18 @@ class TCPClient(object):
         self.close()
         logger.info(f'Stopped listening to {self.serverIP}')
 
-    def listen(self):
-        ''' Keep listening to the server '''
-        thread = threading.Thread(target=self._listen,
-                                  name='TCPClient Listening')
-        thread.setDaemon(True)
-        thread.start()
-        logger.debug(f'Keep Listening to the {self.serverIP}')
-
-        # Say hello to server
-        self.send(f'Hello from client: {self.name}')
+    def _keep_send_keepAliveMessages(self):
+        msg = keepAliveMessage('0')
+        logger.debug(f'Start keep sending keepAliveMessage')
+        while True:
+            time.sleep(5)
+            try:
+                self.send(msg)
+            except:
+                err = traceback.format_exc()
+                logger.debug(f'Failed on sending keepAliveMessage: {err}')
+                break
+        logger.debug(f'Stopped keep sending keepAliveMessage')
 
     def send(self, message):
         ''' Send [message] to server

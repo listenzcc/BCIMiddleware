@@ -46,10 +46,15 @@ def timestr():
     return time.strftime('%Y-%m-%d-%H-%M-%S')
 
 
-logger_kwargs['filepath'] = os.path.join(pwd,
-                                         '..',
-                                         'logs',
-                                         'log-{}.log'.format(timestr()))
+logger_file_path = os.path.join(pwd,
+                                '..',
+                                'logs',
+                                'log-{}.log'.format(timestr()))
+
+if not os.path.isdir(os.path.dirname(logger_file_path)):
+    os.mkdir(os.path.dirname(logger_file_path))
+
+logger_kwargs['filepath'] = logger_file_path
 
 logger = generate_logger(**logger_kwargs)
 

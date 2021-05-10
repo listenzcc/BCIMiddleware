@@ -297,8 +297,10 @@ class TCPClient(object):
                 break
 
             except Exception as err:
+                detail = traceback.format_exc()
+                print(f'E: {detail}')
                 logger.error(f'Unexpected error: {err}')
-                traceback.print_exc()
+                logger.debug(f'Unexpected error detail: {detail}')
                 break
 
         self.close()

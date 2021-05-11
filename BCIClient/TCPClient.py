@@ -301,6 +301,8 @@ class TCPClient(object):
                 print(f'E: {detail}')
                 logger.error(f'Unexpected error: {err}')
                 logger.debug(f'Unexpected error detail: {detail}')
+                self.send(operationFailedError(income,
+                                               comment=f'Connection will be reset due to the undefined problems "{err}", detail is "{detail}"'))
                 break
 
         self.close()

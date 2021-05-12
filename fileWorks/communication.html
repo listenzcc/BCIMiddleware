@@ -686,6 +686,8 @@ hue-6-2: #e6c07b
 <li><a href="#%E6%B6%88%E6%81%AF%E5%AE%9A%E4%B9%89">消息定义</a></li>
 </ul>
 </li>
+<li><a href="#%E6%9E%84%E9%80%A0%E6%A8%A1%E5%9E%8B%E6%8C%87%E4%BB%A4%E6%9C%89%E6%A0%87%E7%AD%BE">构造模型指令（有标签）</a></li>
+<li><a href="#%E6%9E%84%E9%80%A0%E6%A8%A1%E5%9E%8B%E6%8C%87%E4%BB%A4%E6%97%A0%E6%A0%87%E7%AD%BE">构造模型指令（无标签）</a></li>
 <li><a href="#%E5%90%8C%E6%AD%A5%E6%9C%89%E6%A0%87%E7%AD%BE%E6%A8%A1%E5%BC%8F">同步（有标签）模式</a>
 <ul>
 <li><a href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-1">流程图</a></li>
@@ -726,7 +728,13 @@ hue-6-2: #e6c07b
 <ol>
 <li>
 <p>训练模式</p>
-<p>用于用户在正式使用前进行算法训练。</p>
+<p>用于用户在正式使用前进行算法训练。
+分别包括有标签、无标签两种模式，但两种模式在采集数据的过程中完全相同，因此在后台不作区分。</p>
+</li>
+<li>
+<p>构造模型指令</p>
+<p>用于告知后台使用 XXX 数据构造模型。
+在此消息中，需要告知后台使用有标签模型或无标签模式进行模型构造。</p>
 </li>
 <li>
 <p>同步（有标签）模式</p>
@@ -754,7 +762,7 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;training&quot;</span>,
-  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span> <span class="hljs-comment">// 被试名</span>
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Data]&quot;</span> <span class="hljs-comment">// 该SESSION结束后，数据将存储在这里</span>
 }
 </div></code></pre>
 </li>
@@ -779,6 +787,56 @@ hue-6-2: #e6c07b
 </div></code></pre>
 </li>
 </ol>
+<h2 id="构造模型指令有标签">构造模型指令（有标签）</h2>
+<ol>
+<li>
+<p>开始构造消息</p>
+<p>由“主控”发送给“后台”，用于开始构造数据。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startBuilding&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path of the Data]&quot;</span>, <span class="hljs-comment">// 数据已存储在这里</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Model]&quot;</span> <span class="hljs-comment">// 模型将存储在这里</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束消息</p>
+<p>由“后台”发送给“主控”，用于告知训练完毕。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopBuilding&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>
+}
+</div></code></pre>
+</li>
+</ol>
+<h2 id="构造模型指令无标签">构造模型指令（无标签）</h2>
+<ol>
+<li>
+<p>开始构造消息</p>
+<p>由“主控”发送给“后台”，用于开始构造数据。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startBuilding&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path of the Data]&quot;</span>, <span class="hljs-comment">// 数据已存储在这里</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Model]&quot;</span> <span class="hljs-comment">// 模型将存储在这里</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p>结束消息</p>
+<p>由“后台”发送给“主控”，用于告知训练完毕。</p>
+<p>消息约定</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopBuilding&quot;</span>,
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>
+}
+</div></code></pre>
+</li>
+</ol>
 <h2 id="同步有标签模式">同步（有标签）模式</h2>
 <p>同步模式是有标签的在线实验，前若干个标签是用于更新数据（称为验证阶段），因此会对已有的模型进行更新。
 模型更新过程在通信过程中有所体现。</p>
@@ -796,8 +854,9 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
-  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span>, <span class="hljs-comment">// 被试名</span>
-  <span class="hljs-attr">&quot;sessionCount&quot;</span>: <span class="hljs-string">&quot;1&quot;</span>, <span class="hljs-comment">// 第几次同异步实验</span>
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Data]&quot;</span>, <span class="hljs-comment">// 该SESSION结束后，数据将存储在这里</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path of the Model]&quot;</span>, <span class="hljs-comment">// 使用已有模型进行计算</span>
+  <span class="hljs-attr">&quot;newModelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Model]&quot;</span>, <span class="hljs-comment">// 该SESSION结束后，模型将存储在这里</span>
   <span class="hljs-attr">&quot;updateCount&quot;</span>: <span class="hljs-string">&quot;4&quot;</span> <span class="hljs-comment">// 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试</span>
 }
 </div></code></pre>
@@ -853,8 +912,8 @@ hue-6-2: #e6c07b
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;startSession&quot;</span>,
   <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
-  <span class="hljs-attr">&quot;subjectID&quot;</span>: <span class="hljs-string">&quot;subject-1&quot;</span>, <span class="hljs-comment">// 被试名</span>
-  <span class="hljs-attr">&quot;sessionCount&quot;</span>: <span class="hljs-string">&quot;1&quot;</span> <span class="hljs-comment">// 第几次异步实验</span>
+  <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Data]&quot;</span>, <span class="hljs-comment">// 该SESSION结束后，数据将存储在这里</span>
+  <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path of the Model]&quot;</span> <span class="hljs-comment">// 使用已有模型进行计算</span>
 }
 </div></code></pre>
 </li>

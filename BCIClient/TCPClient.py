@@ -14,27 +14,33 @@ from .modules import TrainModule, ActiveModule, PassiveModule
 from .subject import BCISubject
 from . import logger, tcp_params, decode, encode, pack, unpack, active_interval
 
+# ------------------------------------------------------
+# Pack Useful Messages
+
 # Keep Alive Message
 
 
 def keepAliveMessage(count='0'):
-    ''' Send keep alive message '''
+    ''' Make keep alive message '''
+    logger.debug(f'Make keepAliveMessage')
     return pack(dict(method='keepAlive', count=count))
 
-# Error Messages
+# Error Messages of Invalid Message Received
 
 
 def invalidMessageError(raw, comment=''):
-    ''' Send error message of invalid message received '''
+    ''' Make error message of invalid message received '''
     logger.error(f'InvalidMessageError: {raw}, {comment}')
     return pack(dict(method='error',
                      reason='invalidMessage',
                      raw=raw,
                      comment=comment))
 
+# Error Message of Operation Failed
+
 
 def operationFailedError(raw, detail='undefinedError', comment=''):
-    ''' Send error message of operation failed '''
+    ''' Make error message of operation failed '''
     logger.error(f'OperationFailedError: {raw}, {comment}')
     return pack(dict(method='error',
                      reason='operationFailed',

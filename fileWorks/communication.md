@@ -5,6 +5,8 @@
   - [训练模式](#训练模式)
     - [流程图](#流程图)
     - [消息定义](#消息定义)
+  - [构造模型指令（有标签）](#构造模型指令有标签)
+  - [构造模型指令（无标签）](#构造模型指令无标签)
   - [同步（有标签）模式](#同步有标签模式)
     - [流程图](#流程图-1)
     - [消息定义](#消息定义-1)
@@ -33,13 +35,19 @@
 1. 训练模式
 
    用于用户在正式使用前进行算法训练。
+   分别包括有标签、无标签两种模式，但两种模式在采集数据的过程中完全相同，因此在后台不作区分。
 
-2. 同步（有标签）模式
+2. 构造模型指令
+
+   用于告知后台使用 XXX 数据构造模型。
+   在此消息中，需要告知后台使用有标签模型或无标签模式进行模型构造。
+
+3. 同步（有标签）模式
 
    实验开始后，“游戏”程序通过打并口的方式向“后台”程序发送计算请求；
    “后台”程序接到要求后，根据近期脑电数据，计算并发送动作标签。
 
-3. 异步（无标签）模式
+4. 异步（无标签）模式
 
    实验开始后，“后台”程序周期性地，主动向“主控”程序发送动作标签；
    动作标签是对连续的脑电数据进行加窗而计算得到的。
@@ -64,7 +72,7 @@
    {
      "method": "startSession",
      "sessionName": "training",
-     "subjectID": "subject-1" // 被试名
+     "dataPath": "[The Valid Path to Save the Data]" // 该SESSION结束后，数据将存储在这里
    }
    ```
 
@@ -94,6 +102,66 @@
    }
    ```
 
+## 构造模型指令（有标签）
+
+1. 开始构造消息
+
+   由“主控”发送给“后台”，用于开始构造数据。
+
+   消息约定
+
+   ```json
+   {
+     "method": "startBuilding",
+     "sessionName": "youbiaoqian",
+     "dataPath": "[The Valid Path of the Data]", // 数据已存储在这里
+     "modelPath": "[The Valid Path to Save the Model]" // 模型将存储在这里
+   }
+   ```
+
+2. 结束消息
+
+   由“后台”发送给“主控”，用于告知训练完毕。
+
+   消息约定
+
+   ```json
+   {
+     "method": "stopBuilding",
+     "sessionName": "youbiaoqian"
+   }
+   ```
+
+## 构造模型指令（无标签）
+
+1. 开始构造消息
+
+   由“主控”发送给“后台”，用于开始构造数据。
+
+   消息约定
+
+   ```json
+   {
+     "method": "startBuilding",
+     "sessionName": "wubiaoqian",
+     "dataPath": "[The Valid Path of the Data]", // 数据已存储在这里
+     "modelPath": "[The Valid Path to Save the Model]" // 模型将存储在这里
+   }
+   ```
+
+2. 结束消息
+
+   由“后台”发送给“主控”，用于告知训练完毕。
+
+   消息约定
+
+   ```json
+   {
+     "method": "stopBuilding",
+     "sessionName": "wubiaoqian"
+   }
+   ```
+
 ## 同步（有标签）模式
 
 同步模式是有标签的在线实验，前若干个标签是用于更新数据（称为验证阶段），因此会对已有的模型进行更新。
@@ -117,8 +185,9 @@
    {
      "method": "startSession",
      "sessionName": "youbiaoqian",
-     "subjectID": "subject-1", // 被试名
-     "sessionCount": "1", // 第几次同异步实验
+     "dataPath": "[The Valid Path to Save the Data]", // 该SESSION结束后，数据将存储在这里
+     "modelPath": "[The Valid Path of the Model]", // 使用已有模型进行计算
+     "newModelPath": "[The Valid Path to Save the Model]", // 该SESSION结束后，模型将存储在这里
      "updateCount": "4" // 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试
    }
    ```
@@ -187,8 +256,8 @@
    {
      "method": "startSession",
      "sessionName": "wubiaoqian",
-     "subjectID": "subject-1", // 被试名
-     "sessionCount": "1" // 第几次异步实验
+     "dataPath": "[The Valid Path to Save the Data]", // 该SESSION结束后，数据将存储在这里
+     "modelPath": "[The Valid Path of the Model]" // 使用已有模型进行计算
    }
    ```
 

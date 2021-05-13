@@ -807,7 +807,8 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopBuilding&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;youbiaoqian&quot;</span>,
+  <span class="hljs-attr">&quot;validAccuracy&quot;</span>: <span class="hljs-string">&quot;0.95&quot;</span> <span class="hljs-comment">// 训练模型时的正确率数值，正常情况下数值为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。</span>
 }
 </div></code></pre>
 </li>
@@ -832,7 +833,8 @@ hue-6-2: #e6c07b
 <p>消息约定</p>
 <pre><code class="language-json"><div>{
   <span class="hljs-attr">&quot;method&quot;</span>: <span class="hljs-string">&quot;stopBuilding&quot;</span>,
-  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>
+  <span class="hljs-attr">&quot;sessionName&quot;</span>: <span class="hljs-string">&quot;wubiaoqian&quot;</span>,
+  <span class="hljs-attr">&quot;validAccuracy&quot;</span>: <span class="hljs-string">&quot;0.95&quot;</span> <span class="hljs-comment">// 训练模型时的正确率数值，正常情况下数值为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。</span>
 }
 </div></code></pre>
 </li>
@@ -857,7 +859,8 @@ hue-6-2: #e6c07b
   <span class="hljs-attr">&quot;dataPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Data]&quot;</span>, <span class="hljs-comment">// 该SESSION结束后，数据将存储在这里</span>
   <span class="hljs-attr">&quot;modelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path of the Model]&quot;</span>, <span class="hljs-comment">// 使用已有模型进行计算</span>
   <span class="hljs-attr">&quot;newModelPath&quot;</span>: <span class="hljs-string">&quot;[The Valid Path to Save the Model]&quot;</span>, <span class="hljs-comment">// 该SESSION结束后，模型将存储在这里</span>
-  <span class="hljs-attr">&quot;updateCount&quot;</span>: <span class="hljs-string">&quot;4&quot;</span> <span class="hljs-comment">// 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试</span>
+  <span class="hljs-attr">&quot;updateCount&quot;</span>: <span class="hljs-string">&quot;4&quot;</span>, <span class="hljs-comment">// 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试</span>
+  <span class="hljs-attr">&quot;totalCount&quot;</span>: <span class="hljs-string">&quot;10&quot;</span> <span class="hljs-comment">// 总标签的数量，10代表总共会出现10个标签的动作，此数值会被后台忽略</span>
 }
 </div></code></pre>
 </li>

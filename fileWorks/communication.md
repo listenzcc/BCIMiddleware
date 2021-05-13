@@ -129,7 +129,7 @@
    {
      "method": "stopBuilding",
      "sessionName": "youbiaoqian",
-     "validAccuracy": 0.95 // 训练模型时的正确率数值，正常情况下为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。
+     "validAccuracy": "0.95" // 训练模型时的正确率数值，正常情况下数值为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。
    }
    ```
 
@@ -160,7 +160,7 @@
    {
      "method": "stopBuilding",
      "sessionName": "wubiaoqian",
-     "validAccuracy": 0.95 // 训练模型时的正确率数值，正常情况下为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。
+     "validAccuracy": "0.95" // 训练模型时的正确率数值，正常情况下数值为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。
    }
    ```
 
@@ -190,7 +190,8 @@
      "dataPath": "[The Valid Path to Save the Data]", // 该SESSION结束后，数据将存储在这里
      "modelPath": "[The Valid Path of the Model]", // 使用已有模型进行计算
      "newModelPath": "[The Valid Path to Save the Model]", // 该SESSION结束后，模型将存储在这里
-     "updateCount": "4" // 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试
+     "updateCount": "4", // 验证的数量，4代表前4个标签是用于更新模型，之后才进行模型测试
+     "totalCount": "10" // 总标签的数量，10代表总共会出现10个标签的动作，此数值会被后台忽略
    }
    ```
 

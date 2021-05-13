@@ -1,3 +1,4 @@
+# %%
 '''
 TCP server interface for console.
 The TCP server will be automatically built.
@@ -5,11 +6,13 @@ The TCP server will be automatically built.
 - @interface: The function for user interface, and keep the server running.
 '''
 
+import os
 import time
 import json
 from TCPServerSimulation import TCPServer
 
-
+# %%
+# Coding Tools
 coding = 'utf-8'
 
 
@@ -42,15 +45,20 @@ def pack(dct):
     return json.dumps(dct)
 
 
-server = TCPServer()
-server.start()
+# %%
+# Sessions
+folder = r'D:\BCIMiddlewareFolder\DataFolder'
+
+
+def path(name):
+    return os.path.join(folder, name)
 
 
 def training(send):
     send(pack(dict(
         method='startSession',
         sessionName='training',
-        subjectID="subject-1"
+        dataPath=path('d1.data')
     )))
 
     time.sleep(100)
@@ -61,12 +69,22 @@ def training(send):
     )))
 
 
+def building(send):
+    send(pack(dict(
+        method='startBuilding',
+        sessionName='youbiaoqian',
+        dataPath=path('d1.data'),
+        modelPath=path('m1.model')
+    )))
+
+
 def youbiaoqian(send):
     send(pack(dict(
         method='startSession',
         sessionName='youbiaoqian',
-        subjectID="subject-1",
-        sessionCount="1",
+        dataPath=path('d2.data'),
+        modelPath=path('m1.model'),
+        newModelPath=path('m1-1.model'),
         updateCount="4"
     )))
 
@@ -83,17 +101,20 @@ def wubiaoqian(send):
     send(pack(dict(
         method='startSession',
         sessionName='wubiaoqian',
-        subjectID="subject-1",
-        sessionCount="1"
+        dataPath=path('d3.data'),
+        modelPath=path('m1.model')
     )))
 
-    time.sleep(10)
+    time.sleep(100)
 
     send(pack(dict(
         method='stopSession',
         sessionName='wubiaoqian'
     )))
     pass
+
+# %%
+# Interface
 
 
 def interface():
@@ -105,6 +126,7 @@ def interface():
         list="List the alive sessions",
         send="Send message through all alive sessions, send [message]",
         training="Start training simulation",
+        building="Start building simulation",
         youbiaoqian="Start youbiaoqian simulation",
         wubiaoqian="Start wubiaoqian simulation"
     )
@@ -131,7 +153,7 @@ def interface():
                 session.send(message)
             continue
 
-        if inp in ['training', 'youbiaoqian', 'wubiaoqian']:
+        if inp in ['training', 'building', 'youbiaoqian', 'wubiaoqian']:
             session = None
 
             for session in server.alive_sessions():
@@ -144,6 +166,9 @@ def interface():
             if inp == 'training':
                 training(session.send)
 
+            if inp == 'building':
+                building(session.send)
+
             if inp == 'youbiaoqian':
                 youbiaoqian(session.send)
 
@@ -155,5 +180,9 @@ def interface():
     return 0
 
 
+# %%
+# Main Entrance
 if __name__ == '__main__':
+    server = TCPServer()
+    server.start()
     interface()

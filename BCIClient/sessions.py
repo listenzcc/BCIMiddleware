@@ -44,14 +44,11 @@ class TrainSession(object):
             self.ds.stop()
             self.ds.save()
             self.ds.close()
-            self.generate_decoder()
 
             logger.debug(f'Training module stopped')
             return 0, dict(
                 method='sessionStopped',
                 sessionName='training',
-                dataPath=self.filepath,
-                modelPath=self.decoderpath
             )
 
         return 1, dict(
@@ -70,13 +67,13 @@ class BuildSession(object):
       - wubiaoqian module;
     '''
 
-    def __init__(self, filepath, decoderpath, sessionName):
+    def __init__(self, filepath, decoderpath, sessionname):
         ''' Initialize the train module,
 
         Args:
         - @filepath: The path of the file to be stored;
         - @decoderpath: The path of the decoder to be stored;
-        - @sessionName: The name of the session, 'youbiaoqian' or 'wubiaoqian'.
+        - @sessionname: The name of the session, 'youbiaoqian' or 'wubiaoqian'.
         '''
         # Necessary parameters
         self.filepath = filepath
@@ -199,7 +196,6 @@ class ActiveSession(object):
             return 0, dict(
                 method='sessionStopped',
                 sessionName='wubiaoqian',
-                dataPath=self.filepath
             )
 
         return 1, dict(

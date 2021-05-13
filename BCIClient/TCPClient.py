@@ -177,9 +177,9 @@ class TCPClient(object):
 
                     # Starting Building Session
                     try:
-                        kwargs = dict(sessionName=dct['sessionName'],
+                        kwargs = dict(sessionname=dct['sessionName'],
                                       filepath=dct['dataPath'],
-                                      modelPath=dct['modelPath'])
+                                      decoderpath=dct['modelPath'])
 
                         self.session = BuildSession(**kwargs)
                         logger.info(f'Building session started')
@@ -198,7 +198,7 @@ class TCPClient(object):
                             f'Validation Accuracy is Computed, Accuracy is {acc}')
                         self.send(dict(method='stopBuilding',
                                        sessionName=dct['sessionName'],
-                                       validAccuracy=acc))
+                                       validAccuracy=f'{acc}'))
                     except:
                         self.session = None
                         error = traceback.format_exc()
@@ -219,14 +219,14 @@ class TCPClient(object):
                         dct.get('sessionName', None) == 'wubiaoqian',
                         dct.get('dataPath', None) is not None,
                         dct.get('modelPath', None) is not None,
-                        self.module == None]):
-                    logger.info(f'Active module is starting')
+                        self.session == None]):
+                    logger.info(f'Active session is starting')
 
-                    # Start Active Module
+                    # Start Active Session
                     try:
                         kwargs = dict(
                             filepath=dct['dataPath'],
-                            decoderpath=dct['decoderPath'],
+                            decoderpath=dct['modelPath'],
                             interval=active_interval,
                             send=self.send
                         )
@@ -259,7 +259,7 @@ class TCPClient(object):
                     try:
                         kwargs = dict(
                             filepath=dct['dataPath'],
-                            decoderpath=dct['decoderPath'],
+                            decoderpath=dct['modelPath'],
                             updatedecoderpath=dct['newModelPath'],
                             update_count=int(dct['updateCount']),
                             send=self.send,

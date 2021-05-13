@@ -10,8 +10,7 @@ import threading
 import traceback
 
 # Local Imports
-from .modules import TrainModule, ActiveModule, PassiveModule
-from .subject import BCISubject
+from .sessions import TrainSession, BuildSession, ActiveSession, PassiveSession
 from . import logger, tcp_params, decode, encode, pack, unpack, active_interval
 
 # ------------------------------------------------------
@@ -72,18 +71,20 @@ class TCPClient(object):
         self.name = name
         logger.info(f'TCP Client is initialized as {name} to {IP}')
 
-        self.module = None
+        self.session = None
 
         # Keep listening
         self.keep_listen()
 
     def close(self):
         ''' Close the session '''
+        # Close the client
         self.client.close()
         self.is_connected = False
 
-        if self.module is not None:
-            self.module.ds.stop()
+        # Stop the data stack
+        if self.session is not None:
+            self.session.ds.stop()
 
         logger.info(f'Client closed: {self.serverIP}')
 
@@ -120,6 +121,7 @@ class TCPClient(object):
                     self.send(invalidMessageError(income,
                                                   comment=f'Illegal JSON from {self.serverIP}'))
                     continue
+
                 logger.debug(f'Parsed message "{dct}" from {self.serverIP}')
 
                 # ----------------------------------------------------------------
@@ -137,130 +139,139 @@ class TCPClient(object):
                     continue
 
                 # ----------------------------------------------------------------
-                # Start Training Module
+                # Start Training Session
                 if all([dct.get('method', None) == 'startSession',
                         dct.get('sessionName', None) == 'training',
-                        dct.get('subjectID', None) is not None,
-                        self.module == None]):
-                    logger.info(f'Training module is starting')
+                        dct.get('dataPath', None) is not None,
+                        self.session == None]):
 
-                    # Prepare Subject Folders
-                    subjectID = dct['subjectID']
+                    logger.info(f'Training session is starting')
+
+                    # Startup Training Session
                     try:
-                        subject = BCISubject(subjectID)
-                        _path = subject.get_training_path()
-                        kwargs = dict(
-                            filepath=_path['data'],
-                            decoderpath=_path['model'],
-                        )
+                        kwargs = dict(filepath=dct['dataPath'])
+
+                        self.session = TrainSession(**kwargs)
+                        logger.info(f'Training session started')
                     except:
+                        self.session = None
                         error = traceback.format_exc()
                         logger.error(
-                            f'Failed to initialize subject for "{subjectID}", error is "{error}"')
-                        self.send(operationFailedError(income, comment=error))
-                        continue
-
-                    # Startup Training Module
-                    try:
-                        self.module = TrainModule(**kwargs)
-                        logger.info(f'Training module started')
-                    except:
-                        error = traceback.format_exc()
-                        logger.error(
-                            f'Failed start training module for "{subjectID}", error is "{error}"')
+                            f'Failed start training session for "{kwargs}", error is "{error}"')
                         self.send(operationFailedError(income, comment=error))
                         continue
 
                     continue
 
                 # ----------------------------------------------------------------
-                # Start Active Module
+                # Start and Finish Build Session
+                if all([dct.get('method', None) == 'startBuilding',
+                        dct.get('sessionName') in [
+                    'youbiaoqian', 'wubiaoqian'],
+                        dct.get('dataPath', None) is not None,
+                        dct.get('modelPath', None) is not None,
+                        self.session == None]):
+
+                    t_start = time.time()
+                    logger.info(f'Building session is starting')
+
+                    # Starting Building Session
+                    try:
+                        kwargs = dict(sessionName=dct['sessionName'],
+                                      filepath=dct['dataPath'],
+                                      modelPath=dct['modelPath'])
+
+                        self.session = BuildSession(**kwargs)
+                        logger.info(f'Building session started')
+                    except:
+                        self.session = None
+                        error = traceback.format_exc()
+                        logger.error(
+                            f'Failed start building session for "{kwargs}", error is "{error}"')
+                        self.send(operationFailedError(income, comment=error))
+                        continue
+
+                    # Compute Accuracy using Validation
+                    try:
+                        acc = self.session.decoder.k_fold_valid()
+                        logger.info(
+                            f'Validation Accuracy is Computed, Accuracy is {acc}')
+                        self.send(dict(method='stopBuilding',
+                                       sessionName=dct['sessionName'],
+                                       validAccuracy=acc))
+                    except:
+                        self.session = None
+                        error = traceback.format_exc()
+                        logger.error(
+                            f'Failed computing validation accuracy for "{kwargs}", error is "{error}"')
+                        self.send(operationFailedError(income, comment=error))
+                        continue
+
+                    self.session = None
+                    cost = time.time() - t_start
+                    logger.info(
+                        f'Building session finished, costing "{cost}" seconds')
+                    continue
+
+                # ----------------------------------------------------------------
+                # Start Active Session
                 if all([dct.get('method', None) == 'startSession',
                         dct.get('sessionName', None) == 'wubiaoqian',
-                        dct.get('subjectID', None) is not None,
-                        dct.get('sessionCount', None) is not None,
+                        dct.get('dataPath', None) is not None,
+                        dct.get('modelPath', None) is not None,
                         self.module == None]):
                     logger.info(f'Active module is starting')
 
-                    subjectID = dct['subjectID']
-                    sessionCount = dct['sessionCount']
-
-                    # Prepare Subject Folders
-                    # Setup Active Parameters
+                    # Start Active Module
                     try:
-                        subject = BCISubject(subjectID)
-                        subject.set_wubiaoqian(sessionCount)
-                        _path = subject.get_wubiaoqian_path(sessionCount)
                         kwargs = dict(
-                            filepath=_path['data'],
-                            decoderpath=_path['model'],
+                            filepath=dct['dataPath'],
+                            decoderpath=dct['decoderPath'],
                             interval=active_interval,
                             send=self.send
                         )
-                    except:
-                        error = traceback.format_exc()
-                        logger.error(
-                            f'Failed to initialize subject for "{subjectID}" - "{sessionCount}", error is "{error}"')
-                        self.send(operationFailedError(income, comment=error))
-                        continue
 
-                    # Start Active Module
-                    try:
-                        self.module = ActiveModule(**kwargs)
+                        self.session = ActiveSession(**kwargs)
                         logger.info(
-                            f'Active module started, the labels will be sent every {active_interval} seconds.')
+                            f'Active session started, the labels will be sent every {active_interval} seconds.')
                     except:
+                        self.session = None
                         error = traceback.format_exc()
                         logger.error(
-                            f'Failed start active module for "{subjectID}" - "{sessionCount}", error is "{error}"')
+                            f'Failed start active session for "{kwargs}", error is "{error}"')
                         self.send(operationFailedError(income, comment=error))
                         continue
 
                     continue
 
                 # ----------------------------------------------------------------
-                # Start Passive Module
+                # Start Passive Session
                 if all([dct.get('method', None) == 'startSession',
                         dct.get('sessionName', None) == 'youbiaoqian',
-                        dct.get('subjectID', None) is not None,
-                        dct.get('sessionCount', None) is not None,
+                        dct.get('dataPath', None) is not None,
+                        dct.get('modelPath', None) is not None,
+                        dct.get('newModelPath', None) is not None,
                         dct.get('updateCount', None) is not None,
-                        self.module == None]):
+                        self.session == None]):
                     logger.info(f'Passive module is starting')
-
-                    subjectID = dct['subjectID']
-                    sessionCount = dct['sessionCount']
-                    updateCount = int(dct['updateCount'])
-
-                    # Prepare Subject Folders
-                    # Setup Passive Parameters
-                    try:
-                        subject = BCISubject(subjectID)
-                        subject.set_youbiaoqian(sessionCount)
-                        _path = subject.get_youbiaoqian_path(sessionCount)
-                        kwargs = dict(
-                            filepath=_path['data'],
-                            decoderpath=_path['model'],
-                            updatedecoderpath=_path['model_update'],
-                            update_count=updateCount,
-                            send=self.send,
-                        )
-                    except:
-                        error = traceback.format_exc()
-                        logger.error(
-                            f'Failed to initialize subject for "{subjectID}" - "{sessionCount}", error is "{error}"')
-                        self.send(operationFailedError(income, comment=error))
-                        continue
 
                     # Start Passive Module
                     try:
-                        self.module = PassiveModule(**kwargs)
+                        kwargs = dict(
+                            filepath=dct['dataPath'],
+                            decoderpath=dct['decoderPath'],
+                            updatedecoderpath=dct['newModelPath'],
+                            update_count=int(dct['updateCount']),
+                            send=self.send,
+                        )
+                        self.session = PassiveSession(**kwargs)
                         logger.info(
-                            f'Passive module started, the labels will be sent at every requests.')
+                            f'Passive session started, the labels will be sent at every requests.')
                     except:
+                        self.session = None
                         error = traceback.format_exc()
                         logger.error(
-                            f'Failed start passive module for "{subjectID}" - "{sessionCount}", error is "{error}"')
+                            f'Failed start passive session for "{kwargs}", error is "{error}"')
                         self.send(operationFailedError(income, comment=error))
                         continue
 
@@ -268,8 +279,8 @@ class TCPClient(object):
 
                 # ----------------------------------------------------------------
                 # Feed
-                if self.module is not None:
-                    success, rdct = self.module.receive(dct)
+                if self.session is not None:
+                    success, rdct = self.session.receive(dct)
 
                     logger.debug(
                         f'Module received {dct}, operation returned {success}:{rdct}')
@@ -281,10 +292,10 @@ class TCPClient(object):
                                                       comment=rdct['comment']))
 
                     # Remove existing module if it has stopped
-                    if self.module.stopped:
-                        self.module = None
+                    if self.session.stopped:
+                        self.session = None
                         logger.info(
-                            f'Current module stopped for {self.serverIP}.')
+                            f'Current session stopped for {self.serverIP}.')
 
                     continue
 

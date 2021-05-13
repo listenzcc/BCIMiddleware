@@ -1,6 +1,8 @@
 import os
 import numpy as np
 
+from joblib import dump
+
 from . import logger, cfg
 from .neuroScanToolbox import NeuroScanDeviceClient
 
@@ -87,7 +89,7 @@ class DataStack(object):
         if os.path.isfile(self.filepath):
             logger.warning(
                 f'File exists (data) "{self.filepath}", overriding it.')
-        np.save(self.filepath, d)
+        dump(d, self.filepath)
         logger.debug(f'Saved the data ({d.shape}) to {self.filepath}')
 
     def report(self):

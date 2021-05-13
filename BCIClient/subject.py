@@ -1,6 +1,8 @@
 import os
 from . import logger, cfg
 
+raise NotImplementedError('The Subject Module is Deprecated.')
+
 folder = cfg['Subject']['folder']
 
 

@@ -128,7 +128,8 @@
    ```json
    {
      "method": "stopBuilding",
-     "sessionName": "youbiaoqian"
+     "sessionName": "youbiaoqian",
+     "validAccuracy": 0.95 // 训练模型时的正确率数值，正常情况下为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。
    }
    ```
 
@@ -158,7 +159,8 @@
    ```json
    {
      "method": "stopBuilding",
-     "sessionName": "wubiaoqian"
+     "sessionName": "wubiaoqian",
+     "validAccuracy": 0.95 // 训练模型时的正确率数值，正常情况下为 0-1 之间的浮点数，不正常情况下此数值为 -1 代表计算错误。
    }
    ```
 

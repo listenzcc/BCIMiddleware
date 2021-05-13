@@ -1,49 +1,35 @@
-import os
 import time
 import threading
 import traceback
+
+from joblib import load
 
 from . import logger
 from .dataCollector import DataStack
 from .BCIDecoder import BCIDecoder
 
 
-class TrainModule(object):
-    ''' The train module
+class TrainSession(object):
+    ''' The train session
     1. Automatically collecting data;
     2. Stop to training the decoder;
     3. Stop to save the data.
     '''
 
-    def __init__(self, filepath, decoderpath):
+    def __init__(self, filepath):
         ''' Initialize the train module,
 
         Args:
-        - @filepath: The path of the file to be stored;
-        - @decoderpath: The path of the decoder to be stored.
+        - @filepath: The data will be stored to the filepath;
         '''
         # Necessary parameters
         self.filepath = filepath
-        self.decoderpath = decoderpath
 
         # Start collecting data
         self.ds = DataStack(filepath)
         self.ds.start()
 
         self.stopped = False
-
-    def generate_decoder(self):
-        # Generate and save decoder
-        data = self.ds.get_data()
-        decoder = BCIDecoder()
-        decoderpath = self.decoderpath
-
-        # Train decoder
-        decoder.fit(data)
-
-        # Save decoder
-        decoder.save_model(decoderpath)
-        logger.info(f'Saved the decoder to {decoderpath}')
 
     def receive(self, dct):
         logger.debug(f'Training module received {dct}')
@@ -76,8 +62,44 @@ class TrainModule(object):
         )
 
 
-class ActiveModule(object):
-    ''' The active module
+class BuildSession(object):
+    ''' The Session of Building BCIDecoder
+    1. Only response to startBuilding task;
+    2. Two modules are selected
+      - youbiaoqian module;
+      - wubiaoqian module;
+    '''
+
+    def __init__(self, filepath, decoderpath, sessionName):
+        ''' Initialize the train module,
+
+        Args:
+        - @filepath: The path of the file to be stored;
+        - @decoderpath: The path of the decoder to be stored;
+        - @sessionName: The name of the session, 'youbiaoqian' or 'wubiaoqian'.
+        '''
+        # Necessary parameters
+        self.filepath = filepath
+        self.decoderpath = decoderpath
+        self.generate_decoder()
+
+    def generate_decoder(self):
+        # Generate and save decoder
+        data = load(self.filepath)
+        decoder = BCIDecoder()
+        decoderpath = self.decoderpath
+
+        # Train decoder
+        decoder.fit(data)
+
+        # Save decoder
+        decoder.save_model(decoderpath)
+        self.decoder = decoder
+        logger.info(f'Saved the decoder to {decoderpath}')
+
+
+class ActiveSession(object):
+    ''' The active session
     1. Automatically collecting data;
     2. Compute event timely;
     3. Stop to save the data.
@@ -188,8 +210,8 @@ class ActiveModule(object):
         )
 
 
-class PassiveModule(object):
-    ''' The passive module
+class PassiveSession(object):
+    ''' The passive session
     1. Automatically collecting data;
     2. Compute event on request;
     3. Stop to save the data.

@@ -3,9 +3,12 @@
         "INET",
         "Neuro",
         "dtype",
+        "eigh",
+        "eigvalsh",
         "nsclient",
         "onclose",
         "rdct",
+        "scipy",
         "struct",
         "wubiaoqian",
         "youbiaoqian"

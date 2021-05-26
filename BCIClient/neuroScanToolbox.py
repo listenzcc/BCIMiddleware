@@ -122,7 +122,8 @@ class NeuroScanDeviceClient(object):
 
     def _clear(self):
         ''' Clear data '''
-        self.data = np.zeros((self.n_channels, maxLength * self.sample_rate))
+        self.data = np.zeros(
+            (self.n_channels, self.maxLength * self.sample_rate))
         self.data_length = 0
         logger.info(
             f'Created new data pool as zero matrix of {self.data.shape}')

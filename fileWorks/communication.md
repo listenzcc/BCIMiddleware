@@ -260,7 +260,8 @@
      "method": "startSession",
      "sessionName": "wubiaoqian",
      "dataPath": "[The Valid Path to Save the Data]", // 该SESSION结束后，数据将存储在这里
-     "modelPath": "[The Valid Path of the Model]" // 使用已有模型进行计算
+     "modelPath": "[The Valid Path of the Model]", // 使用已有模型进行计算
+     "totalCount": "10" // 总标签的数量，10代表总共会出现10个标签的动作，此数值会被后台忽略
    }
    ```
 
